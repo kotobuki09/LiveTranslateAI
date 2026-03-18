@@ -1,0 +1,18 @@
+{
+    "STT_ENGINE": "local",
+    "TRANSLATE_ENGINE": "azure",
+    "AZURE_SPEECH_REGION": "southeastasia",
+    "AUDIO_DEVICE_INDEX": -1,
+    "AZURE_TRANSLATOR_REGION": "global",
+    "WINDOW_OPACITY": 1.0,
+    "FONT_SIZE_ORIGINAL": 16,
+    "FONT_SIZE_TRANS": 16,
+    "AUTO_CLEAR_SEC": 4,
+    "MAX_HISTORY": 1,
+    "DEBUG_MODE": false,
+    "SUBTITLE_WIDTH": 1418,
+    "SUBTITLE_HEIGHT": 407,
+    "SUBTITLE_X": 654,
+    "SUBTITLE_Y": 1401,
+    "LANG_PAIR": "en-vi"
+}
