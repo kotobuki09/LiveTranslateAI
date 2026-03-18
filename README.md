@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.png" alt="LiveTranslate Logo" width="200">
+</p>
+
 # 🎙️ LiveTranslate: Real-Time Speech Translation Overlay
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -16,6 +20,11 @@
     - *Note: On first run, Windows might show a "SmartScreen" warning. Click "More info" -> "Run anyway".*
 3.  **Configure**: Right-click the **LT** icon in the system tray -> **Settings** to enter your API keys.
 4.  **Listen**: Right-click the tray icon -> **Start Listening**.
+---
+
+## 📺 Demo
+
+![LiveTranslate Demo](docs/demo.png)
 
 ---
 
