@@ -1,7 +1,7 @@
 def test_config_has_required_audio_settings():
     import config
     assert config.SAMPLE_RATE == 16000
-    assert config.CHUNK_MS == 250
+    assert config.CHUNK_MS == 100
     assert config.CHANNELS == 1
 
 
@@ -15,20 +15,18 @@ def test_config_has_required_gemini_settings():
 
 def test_config_has_stt_engine_settings():
     import config
-    assert config.STT_ENGINE in ("local", "gemini")
-    assert config.WHISPER_MODEL in ("tiny", "base", "small", "medium", "large-v3")
-    assert isinstance(config.WHISPER_LANG, str)
+    assert config.STT_ENGINE in ("azure", "gemini")
 
 
 def test_config_has_required_ui_settings():
     import config
-    assert config.WINDOW_OPACITY == 0.85
+    assert config.WINDOW_OPACITY == 1.0
     assert config.COLOR_TRANS == "#FFD700"
     assert config.COLOR_ORIGINAL == "#FFFFFF"
-    assert config.AUTO_CLEAR_SEC == 8
+    assert config.AUTO_CLEAR_SEC == 4
 
 
 def test_chunk_size_is_calculated_correctly():
     import config
-    # 16000 samples/sec * 250ms / 1000 * 2 bytes/sample = 8000 bytes
-    assert config.CHUNK_SIZE == 8000
+    # 16000 samples/sec * 100ms / 1000 * 2 bytes/sample = 3200 bytes
+    assert config.CHUNK_SIZE == 3200

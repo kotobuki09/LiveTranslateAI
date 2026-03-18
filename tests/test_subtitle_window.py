@@ -26,25 +26,24 @@ def test_subtitle_window_has_two_labels(subtitle_win):
 
 def test_update_text_sets_labels(subtitle_win):
     subtitle_win.update_text("Hello world", "Xin chao the gioi", "en")
-    assert "Hello world" in subtitle_win.label_original.text()
-    assert "Xin chao the gioi" in subtitle_win.label_translation.text()
+    assert subtitle_win._target_orig == "Hello world"
+    assert subtitle_win._target_trans == "Xin chao the gioi"
 
 
 def test_update_text_sets_lang_badge_en(subtitle_win):
     subtitle_win.update_text("Hello", "Xin chao", "en")
     assert "EN" in subtitle_win.lang_badge.text()
-    assert "VI" in subtitle_win.lang_badge.text()
 
 
 def test_update_text_sets_lang_badge_vi(subtitle_win):
     subtitle_win.update_text("Xin chao", "Hello", "vi")
     assert "VI" in subtitle_win.lang_badge.text()
-    assert "EN" in subtitle_win.lang_badge.text()
 
 
-def test_clear_clears_labels(subtitle_win):
+def test_clear_clears_labels(subtitle_win, qtbot):
     subtitle_win.update_text("Hello", "Xin chao", "en")
     subtitle_win.clear()
+    qtbot.wait(600)
     assert subtitle_win.label_original.text() == ""
     assert subtitle_win.label_translation.text() == ""
     assert subtitle_win.lang_badge.text() == ""

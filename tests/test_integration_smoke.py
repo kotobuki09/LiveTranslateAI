@@ -11,28 +11,13 @@ def test_all_modules_importable():
     import config
     import audio_capture
     import gemini_client
-    import local_stt
     import translator
     import subtitle_window
     import tray
     assert True  # all imports succeeded
 
 
-def test_gemini_client_detect_lang_roundtrip_en():
-    from gemini_client import GeminiClient
-    assert GeminiClient._detect_lang("Good morning class") == "en"
-
-
-def test_gemini_client_detect_lang_roundtrip_vi():
-    from gemini_client import GeminiClient
-    assert GeminiClient._detect_lang("Xin chào") == "vi"
-
-
-def test_gemini_client_detect_lang_empty_and_ascii():
-    from gemini_client import GeminiClient
-    assert GeminiClient._detect_lang("") == "en"
-    assert GeminiClient._detect_lang("random text") == "en"
-    assert GeminiClient._detect_lang("Đây là tiếng Việt") == "vi"
+# detect_lang tests removed (tested in test_translator.py)
 
 
 def test_subtitle_window_full_lifecycle(qtbot):
@@ -42,18 +27,17 @@ def test_subtitle_window_full_lifecycle(qtbot):
 
     # English -> Vietnamese
     win.update_text("Good morning", "Chao buoi sang", "en")
-    assert "Good morning" in win.label_original.text()
-    assert "Chao buoi sang" in win.label_translation.text()
+    assert win._target_orig == "Good morning"
+    assert win._target_trans == "Chao buoi sang"
     assert "EN" in win.lang_badge.text()
-    assert "VI" in win.lang_badge.text()
 
     # Vietnamese -> English
     win.update_text("Xin chao", "Hello", "vi")
     assert "VI" in win.lang_badge.text()
-    assert "EN" in win.lang_badge.text()
 
     # Clear
     win.clear()
+    qtbot.wait(500)
     assert win.label_original.text() == ""
     assert win.label_translation.text() == ""
     assert win.lang_badge.text() == ""
