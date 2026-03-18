@@ -15,11 +15,41 @@
 
 ## 📥 Download & Quick Start
 
-1.  **Download the Executable**: Go to [plan/release/](plan/release/) and download `LiveTranslate.exe`.
+1.  **Download the Executable**: Go to [GitHub Releases](https://github.com/kotobuki09/LiveTranslate/releases) (recommended) or the [plan/release/](plan/release/) folder and download `LiveTranslate.exe`.
 2.  **Launch**: Double-click the `.exe`. 
     - *Note: On first run, Windows might show a "SmartScreen" warning. Click "More info" -> "Run anyway".*
 3.  **Configure**: Right-click the **LT** icon in the system tray -> **Settings** to enter your API keys.
 4.  **Listen**: Right-click the tray icon -> **Start Listening**.
+---
+
+## ⚙️ Settings & Personalization
+
+LiveTranslate is designed for **personal use**, meaning you use your own AI provider keys. This ensures your data remains under your control and you only pay for what you use (often within free tiers!).
+
+### 🔑 Personal API Keys
+Right-click the tray icon -> **Settings** to configure:
+
+*   **Google Gemini** (Recommended for lowest latency):
+    *   Get a free key at [Google AI Studio](https://aistudio.google.com/).
+    *   Uses the `Gemini 2.0 Flash` model for real-time speech-to-speech.
+*   **Azure Cognitive Services**:
+    *   Get keys at the [Azure Portal](https://portal.azure.com/).
+    *   Requires **Speech Service** (for STT) and **Translator Service** (for translation).
+
+> [!NOTE]
+> Your keys are stored **locally** in `config.json`. They are never uploaded or shared.
+
+### 🌐 Language Presets
+LiveTranslate supports several bi-directional language presets out of the box:
+
+-   **EN ↔ VI**: English and Vietnamese (Default)
+-   **EN ↔ ZH**: English and Chinese (Simplified)
+-   **EN ↔ JA**: English and Japanese
+-   **EN ↔ KO**: English and Korean
+-   **EN ↔ FR**: English and French
+
+You can switch between these presets instantly via the **Settings** window.
+
 ---
 
 ## 📺 Demo
@@ -103,4 +133,23 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
-*Developed by **kotobuki09** with ❤️ and AI.*
+## 👨‍💼 Author
+
+<table>
+  <tr>
+    <td>
+      <a href="https://kngo.netlify.app/">
+        <img src="docs/profile.png" alt="NGO TRUNG KIEN" width="120" style="border-radius: 50%;">
+      </a>
+    </td>
+    <td>
+      <strong>NGÔ TRUNG KIÊN</strong><br>
+      🌐 <a href="https://kngo.netlify.app/">kngo.netlify.app</a><br>
+      📧 kiennt@hsb.edu.vn<br>
+      🏫 Hanoi School of Business and Management (HSB)<br>
+      📱 Faculty: Non-Traditional Security
+    </td>
+  </tr>
+</table>
+
+---
