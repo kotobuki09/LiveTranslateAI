@@ -1,155 +1,152 @@
 <p align="center">
   <img src="docs/logo.png" alt="LiveTranslate Logo" width="200">
-  </p>
+</p>
 
-  # 🎙️ LiveTranslate: Real-Time Speech Translation Overlay
+# 🎙️ LiveTranslate: Real-Time Speech Translation Overlay
 
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
-  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-  [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/kotobuki09/LiveTranslate/graphs/commit-activity)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/kotobuki09/LiveTranslate/graphs/commit-activity)
 
-  **LiveTranslate** is a low-latency, real-time speech translation subtitle overlay for Windows. It captures your microphone audio, transcribes it using state-of-the-art AI, and provides instant translation in a sleek, semi-transparent floating window.
+**LiveTranslate** is a low-latency, real-time speech translation subtitle overlay for Windows. It captures your microphone audio, transcribes it using state-of-the-art AI, and provides instant translation in a sleek, semi-transparent floating window.
 
-  ---
+---
 
-  ## 📥 Download & Quick Start
+## 📥 Download & Quick Start
 
-  1.  **Download the Executable**: Go to [GitHub Releases](https://github.com/kotobuki09/LiveTranslate/releases) (recommended) or the [plan/release/](plan/release/) folder and download `LiveTranslate.exe`.
-  2.  **Launch**: Double-click the `.exe`. 
-      - *Note: On first run, Windows might show a "SmartScreen" warning. Click "More info" -> "Run anyway".*
+1.  **Download the Executable**: Go to [GitHub Releases](https://github.com/kotobuki09/LiveTranslate/releases) (recommended) or the [plan/release/](plan/release/) folder and download `LiveTranslate.exe`.
+2.  **Launch**: Double-click the `.exe`. 
+    - *Note: On first run, Windows might show a "SmartScreen" warning. Click "More info" -> "Run anyway".*
+3.  **Configure**: Right-click the **LT** icon in the system tray -> **Settings** to enter your API keys.
+4.  **Listen**: Right-click the tray icon -> **Start Listening**.
+---
 
-      3.  **Configure**: Right-click the **LT** icon in the system tray -> **Settings** to enter your API keys.
-      4.  **Listen**: Right-click the tray icon -> **Start Listening**.
-      ---
+## ⚙️ Settings & Personalization
 
-      ## ⚙️ Settings & Personalization
+LiveTranslate is designed for **personal use**, meaning you use your own AI provider keys. This ensures your data remains under your control and you only pay for what you use (often within free tiers!).
 
-      LiveTranslate is designed for **personal use**, meaning you use your own AI provider keys. This ensures your data remains under your control and you only pay for what you use (often within free tiers!).
+### 🔑 Personal API Keys
+Right-click the tray icon -> **Settings** to configure:
 
-      ### 🔑 Personal API Keys
-      Right-click the tray icon -> **Settings** to configure:
+*   **Google Gemini** (Recommended for lowest latency):
+    *   Get a free key at [Google AI Studio](https://aistudio.google.com/).
+    *   Uses the `Gemini 2.0 Flash` model for real-time speech-to-speech.
+*   **Azure Cognitive Services**:
+    *   Get keys at the [Azure Portal](https://portal.azure.com/).
+    *   Requires **Speech Service** (for STT) and **Translator Service** (for translation).
 
-      *   **Google Gemini** (Recommended for lowest latency):
-          *   Get a free key at [Google AI Studio](https://aistudio.google.com/).
-              *   Uses the `Gemini 2.0 Flash` model for real-time speech-to-speech.
-              *   **Azure Cognitive Services**:
-                  *   Get keys at the [Azure Portal](https://portal.azure.com/).
-                      *   Requires **Speech Service** (for STT) and **Translator Service** (for translation).
+> [!NOTE]
+> Your keys are stored **locally** in `config.json`. They are never uploaded or shared.
 
-                      > [!NOTE]
-                      > Your keys are stored **locally** in `config.json`. They are never uploaded or shared.
+### 🌐 Language Presets
+LiveTranslate supports several bi-directional language presets out of the box:
 
-                      ### 🌐 Language Presets
-                      LiveTranslate supports several bi-directional language presets out of the box:
+-   **EN ↔ VI**: English and Vietnamese (Default)
+-   **EN ↔ ZH**: English and Chinese (Simplified)
+-   **EN ↔ JA**: English and Japanese
+-   **EN ↔ KO**: English and Korean
+-   **EN ↔ FR**: English and French
 
-                      -   **EN ↔ VI**: English and Vietnamese (Default)
-                      -   **EN ↔ ZH**: English and Chinese (Simplified)
-                      -   **EN ↔ JA**: English and Japanese
-                      -   **EN ↔ KO**: English and Korean
-                      -   **EN ↔ FR**: English and French
+You can switch between these presets instantly via the **Settings** window.
 
-                      You can switch between these presets instantly via the **Settings** window.
+---
 
-                      ---
+## 📺 Demo
 
-                      ## 📺 Demo
+![LiveTranslate Demo](docs/demo.png)
 
-                      ![LiveTranslate Demo](docs/demo.png)
+---
 
-                      ---
+## 🛠️ How It Works
 
-                      ## 🛠️ How It Works
+LiveTranslate uses a modular pipeline to ensure the lowest possible latency between speech and subtitle display.
 
-                      LiveTranslate uses a modular pipeline to ensure the lowest possible latency between speech and subtitle display.
+```mermaid
+graph LR
+    A[🎤 Mic Input] --> B[🔉 Audio Capture]
+    B --> C{AI Engine}
+    C -->|Gemini Live| D[✨ Real-time STT + Trans]
+    C -->|Azure Speech| E[🎙️ Azure STT]
+    E --> F[🌐 Azure Translator]
+    D --> G[🖥️ Subtitle Overlay]
+    F --> G
+    G --> H[🎞️ Floating Window]
+```
 
-                      ```mermaid
-                      graph LR
-                          A[🎤 Mic Input] --> B[🔉 Audio Capture]
-                              B --> C{AI Engine}
-                                  C -->|Gemini Live| D[✨ Real-time STT + Trans]
-                                      C -->|Azure Speech| E[🎙️ Azure STT]
-                                          E --> F[🌐 Azure Translator]
-                                              D --> G[🖥️ Subtitle Overlay]
-                                                  F --> G
-                                                      G --> H[🎞️ Floating Window]
-                                                      ```
+### The Pipeline:
+1.  **Capture**: `PyAudio` captures raw 16kHz audio in 100ms chunks.
+2.  **Processing**: 
+    - **Google Gemini**: Uses the Gemini 2.0 Flash Live API (WebSocket) for simultaneous transcription and translation (lowest latency).
+    - **Azure**: Uses Azure Cognitive Services for high-fidelity speech-to-text followed by neural translation.
+3.  **Display**: A custom `PyQt5` window renders text with semi-transparency and "stay-on-top" priority.
 
-                                                      ### The Pipeline:
-                                                      1.  **Capture**: `PyAudio` captures raw 16kHz audio in 100ms chunks.
-                                                      2.  **Processing**: 
-                                                          - **Google Gemini**: Uses the Gemini 2.0 Flash Live API (WebSocket) for simultaneous transcription and translation (lowest latency).
-                                                              - **Azure**: Uses Azure Cognitive Services for high-fidelity speech-to-text followed by neural translation.
-                                                              3.  **Display**: A custom `PyQt5` window renders text with semi-transparency and "stay-on-top" priority.
+---
 
-                                                              ---
+## ✨ Key Features
 
-                                                              ## ✨ Key Features
+-   **🚀 Near-Instant Translation**: Leverages **Google Gemini 2.0 Flash** or **Azure Speech Services** for real-time performance.
+-   **🖥️ Non-Intrusive UI**:
+    -   Semi-transparent overlay stays on top of meetings, videos, or games.
+    -   Fully draggable and resizable (via settings).
+    -   Interactive toggle: Double-click to instantly hide/show text.
+-   **⌨️ Global Hotkey**: `Ctrl+Shift+L` to toggle listening from any application.
+-   **📥 Tray-Based**: Operates entirely from the system tray for a clean, taskbar-free workspace.
+-   **🎨 Customizable**: Change font size, colors, and window opacity to match your preference.
 
-                                                              -   **🚀 Near-Instant Translation**: Leverages **Google Gemini 2.0 Flash** or **Azure Speech Services** for real-time performance.
-                                                              -   **🖥️ Non-Intrusive UI**:
-                                                                  -   Semi-transparent overlay stays on top of meetings, videos, or games.
-                                                                      -   Fully draggable and resizable (via settings).
-                                                                          -   Interactive toggle: Double-click to instantly hide/show text.
-                                                                          -   **⌨️ Global Hotkey**: `Ctrl+Shift+L` to toggle listening from any application.
-                                                                          -   **📥 Tray-Based**: Operates entirely from the system tray for a clean, taskbar-free workspace.
-                                                                          -   **🎨 Customizable**: Change font size, colors, and window opacity to match your preference.
+---
 
-                                                                          ---
+## 🧪 Technology Stack
 
-                                                                          ## 🧪 Technology Stack
+-   **Frontend**: `PyQt5` for the high-performance transparent overlay and system tray management.
+-   **Audio**: `PyAudio` for low-level microphone stream handling.
+-   **AI Engines**:
+    -   `google-genai`: WebSocket-based interaction with the Gemini Live API.
+    -   `azure-cognitiveservices-speech`: Official SDK for Azure Speech-to-Text.
+-   **Utilities**: `pystray` (tray icon), `keyboard` (global hotkeys), `python-dotenv` (config).
 
-                                                                          -   **Frontend**: `PyQt5` for the high-performance transparent overlay and system tray management.
-                                                                          -   **Audio**: `PyAudio` for low-level microphone stream handling.
-                                                                          -   **AI Engines**:
-                                                                              -   `google-genai`: WebSocket-based interaction with the Gemini Live API.
-                                                                                  -   `azure-cognitiveservices-speech`: Official SDK for Azure Speech-to-Text.
-                                                                                  -   **Utilities**: `pystray` (tray icon), `keyboard` (global hotkeys), `python-dotenv` (config).
+---
 
-                                                                                  ---
+## 🛡️ Security & Privacy
 
-                                                                                  ## 🛡️ Security & Privacy
+-   **Local Processing**: Audio is streamed directly from your device to the AI provider. No data is stored on our servers.
+-   **Secret Management**: Your API keys are stored locally in `config.json` and are never shared or uploaded.
+-   **Open Source**: Audit the code yourself to see exactly how your data is handled.
 
-                                                                                  -   **Local Processing**: Audio is streamed directly from your device to the AI provider. No data is stored on our servers.
-                                                                                  -   **Secret Management**: Your API keys are stored locally in `config.json` and are never shared or uploaded.
-                                                                                  -   **Open Source**: Audit the code yourself to see exactly how your data is handled.
+---
 
-                                                                                  ---
+## 📐 Promotion & Branding
 
-                                                                                  ## 📐 Promotion & Branding
+Check out the [plan/](plan/) folder for high-resolution logos, marketing copy, and screenshots to help spread the word!
 
-                                                                                  Check out the [plan/](plan/) folder for high-resolution logos, marketing copy, and screenshots to help spread the word!
+---
 
-                                                                                  ---
+## 🤝 Contributing
 
-                                                                                  ## 🤝 Contributing
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-                                                                                  Contributions are what make the open source community such an amazing place to learn, inspire, and create. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+---
 
-                                                                                  ---
+## 📄 License
 
-                                                                                  ## 📄 License
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
-                                                                                  Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+---
 
-                                                                                  ---
+## 👨‍💼 Author
 
-                                                                                  ## 👨‍💼 Author
+<table>
+  <tr>
+    <td>
+      <a href="https://kngo.netlify.app/">
+        <img src="docs/profile.png" alt="NGO TRUNG KIEN" width="120" style="border-radius: 50%;">
+      </a>
+    </td>
+    <td>
+      <strong>NGÔ TRUNG KIÊN</strong><br>
+      🌐 <a href="https://kngo.netlify.app/">kngo.netlify.app</a><br>
+    </td>
+  </tr>
+</table>
 
-                                                                                  <table>
-                                                                                    <tr>
-                                                                                        <td>
-                                                                                              <a href="https://kngo.netlify.app/">
-                                                                                                      <img src="docs/profile.png" alt="NGO TRUNG KIEN" width="120" style="border-radius: 50%;">
-                                                                                                            </a>
-                                                                                                                </td>
-                                                                                                                    <td>
-                                                                                                                          <strong>NGÔ TRUNG KIÊN</strong><br>
-                                                                                                                                🌐 <a href="https://kngo.netlify.app/">kngo.netlify.app</a><br>
-                                                                                                                                      📧 kiennt@hsb.edu.vn<br>
-                                                                                                                                          </td>
-                                                                                                                                            </tr>
-                                                                                                                                            </table>
-
-                                                                                                                                            ---
-
+---
