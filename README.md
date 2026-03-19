@@ -18,6 +18,7 @@
 1.  **Download the Executable**: Go to [GitHub Releases](https://github.com/kotobuki09/LiveTranslate/releases) (recommended) or the [plan/release/](plan/release/) folder and download `LiveTranslate.exe`.
 2.  **Launch**: Double-click the `.exe`. 
     - *Note: On first run, Windows might show a "SmartScreen" warning. Click "More info" -> "Run anyway".*
+
 3.  **Configure**: Right-click the **LT** icon in the system tray -> **Settings** to enter your API keys.
 4.  **Listen**: Right-click the tray icon -> **Start Listening**.
 ---
@@ -146,8 +147,6 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
       <strong>NGÔ TRUNG KIÊN</strong><br>
       🌐 <a href="https://kngo.netlify.app/">kngo.netlify.app</a><br>
       📧 kiennt@hsb.edu.vn<br>
-      🏫 Hanoi School of Business and Management (HSB)<br>
-      📱 Faculty: Non-Traditional Security
     </td>
   </tr>
 </table>
