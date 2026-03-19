@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveTranslate | Real-Time Speech Translation Overlay</title>
+    <meta name="description" content="A low-latency, real-time speech translation subtitle overlay for Windows using generative AI.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i data-lucide="mic" class="logo-icon"></i>
+                <span>LiveTranslate</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it Works</a>
+                <a href="#download" class="btn btn-primary btn-sm">Download Free</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero fade-in-up">
+            <div class="container hero-content">
+                <div class="badge">🚀 Open Source on GitHub</div>
+                <h1 class="hero-title">Break Language Barriers in <span class="gradient-text">Real-Time</span></h1>
+                <p class="hero-subtitle">
+                    A low-latency, semi-transparent subtitle overlay for Windows. 
+                    Powered by Google Gemini 2.0 Flash & Azure AI.
+                </p>
+                <div class="hero-cta">
+                    <a href="https://github.com/kotobuki09/LiveTranslateAI/releases" class="btn btn-primary btn-lg shine-effect">
+                        <i data-lucide="download"></i> Download for Windows
+                    </a>
+                    <a href="https://github.com/kotobuki09/LiveTranslateAI" class="btn btn-secondary btn-lg" target="_blank" rel="noopener">
+                        <i data-lucide="github"></i> View Source
+                    </a>
+                </div>
+                
+                <div class="hero-visual mockup-container">
+                    <div class="mockup-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="mockup-body">
+                        <!-- Placeholder for the actual app demo screenshot -->
+                        <img src="../docs/demo.png" alt="LiveTranslate App Demo" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop';">
+                        
+                        <!-- Floating translation example -->
+                        <div class="floating-subtitle">
+                            こんにちは世界 ➔ Hello, world!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features section">
+            <div class="container">
+                <h2 class="section-title text-center fade-in-up">Why Choose <span class="gradient-text">LiveTranslate</span></h2>
+                <div class="grid grid-3">
+                    <div class="card glass-panel fade-in-up" style="animation-delay: 0.1s">
+                        <div class="card-icon"><i data-lucide="zap"></i></div>
+                        <h3>Ultra-Low Latency</h3>
+                        <p>Powered by streaming APIs from Google Gemini 2.0 and Azure Cognitive Services for near-instantantaneous translations.</p>
+                    </div>
+                    <div class="card glass-panel fade-in-up" style="animation-delay: 0.2s">
+                        <div class="card-icon"><i data-lucide="monitor"></i></div>
+                        <h3>Non-Intrusive Overlay</h3>
+                        <p>A sleek, semi-transparent floating window that stays on top of your meetings, games, or videos.</p>
+                    </div>
+                    <div class="card glass-panel fade-in-up" style="animation-delay: 0.3s">
+                        <div class="card-icon"><i data-lucide="lock"></i></div>
+                        <h3>Secure & Private</h3>
+                        <p>Use your own personal API keys. Data is directly streamed to the AI provider, and keys are stored locally.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases Section -->
+        <section id="usecases" class="usecases section bg-darker">
+            <div class="container grid grid-2 align-center">
+                <div class="usecase-text fade-in-up">
+                    <h2 class="section-title">Perfect for <span class="gradient-text">Every Scenario</span></h2>
+                    <ul class="feature-list">
+                        <li>
+                            <i data-lucide="video"></i>
+                            <div>
+                                <h4>International Meetings</h4>
+                                <p>Understand international clients in Zoom, Teams, or Google Meet without delay.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i data-lucide="gamepad-2"></i>
+                            <div>
+                                <h4>Global Gaming</h4>
+                                <p>Communicate with teammates or understand foreign storylines in your favorite games.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i data-lucide="youtube"></i>
+                            <div>
+                                <h4>Live Streams & Video</h4>
+                                <p>Watch international VTubers, conferences, or tutorials and get live subtitles instantly.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="usecase-visual fade-in-up" style="animation-delay: 0.2s">
+                     <div class="floating-lang-tags">
+                         <span class="tag">🇺🇸 EN ↔ 🇻🇳 VI</span>
+                         <span class="tag">🇺🇸 EN ↔ 🇯🇵 JA</span>
+                         <span class="tag">🇺🇸 EN ↔ 🇨🇳 ZH</span>
+                         <span class="tag">🇺🇸 EN ↔ 🇰🇷 KO</span>
+                         <span class="tag">🇺🇸 EN ↔ 🇫🇷 FR</span>
+                         <span class="tag">🇺🇸 EN ↔ 🇮🇹 IT</span>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="download" class="cta section">
+            <div class="container text-center max-w-md fade-in-up">
+                <h2 class="section-title">Ready to understand the world?</h2>
+                <p>Download the fast installer for Windows and start translating your microphone immediately.</p>
+                <div class="mt-4">
+                     <a href="https://github.com/kotobuki09/LiveTranslateAI/releases" class="btn btn-primary btn-lg shine-effect">
+                        <i data-lucide="download"></i> Get LiveTranslate Free
+                    </a>
+                </div>
+                <p class="mt-2 text-sm text-muted">For Windows 10/11 • 100% Free & Open Source</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content text-center">
+            <div class="logo justify-center mb-2">
+                <i data-lucide="mic" class="logo-icon"></i>
+                <span>LiveTranslate</span>
+            </div>
+             <p class="text-sm text-muted">Created by <a href="https://kngo.netlify.app/" target="_blank" class="text-white hover-underline">NGO TRUNG KIEN</a></p>
+            <div class="footer-links mt-2">
+                <a href="https://github.com/kotobuki09/LiveTranslateAI" target="_blank" aria-label="GitHub"><i data-lucide="github"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
