@@ -15,11 +15,40 @@
 
 ## 📥 Download & Quick Start
 
-1.  **Download the Executable**: Go to [GitHub Releases](https://github.com/kotobuki09/LiveTranslate/releases) (recommended) or the [plan/release/](plan/release/) folder and download `LiveTranslate.exe`.
-2.  **Launch**: Double-click the `.exe`. 
-    - *Note: On first run, Windows might show a "SmartScreen" warning. Click "More info" -> "Run anyway".*
-3.  **Configure**: Right-click the **LT** icon in the system tray -> **Settings** to enter your API keys.
-4.  **Listen**: Right-click the tray icon -> **Start Listening**.
+We provide two ways to run the application for Windows:
+
+### Option 1: Fast Installer (Recommended 🚀)
+1. **Download the Installer**: Go to the [**GitHub Releases page**](https://github.com/kotobuki09/LiveTranslate/releases) and download `LiveTranslate_Setup.exe`.
+2. **Install**: Double-click the Setup file. It installs the backend dependencies and creates a fast-launching Desktop shortcut.
+3. **Launch**: Open LiveTranslate from your Desktop or Start Menu.
+
+### Option 2: Portable Executable (Standalone)
+1. **Download the Executable**: Download `LiveTranslate.exe` from the Releases page.
+2. **Place the file** anywhere you like (Desktop, `C:\Tools\`, etc.).
+3. **Launch**: Double-click it. *(Note: The standalone executable takes ~10-15 seconds to open as it must decompress itself in the background).*
+
+### Quick Start
+4. **Configure (Optional)**: Right-click the **LT** icon in the system tray → **Settings** to enter your own API keys.
+5. **Start**: Right-click the tray icon → **Start Listening**.
+
+> [!WARNING]
+> **Windows SmartScreen Warning — this is expected and safe to bypass.**
+>
+> Because `LiveTranslate.exe` is an **unsigned** open-source executable, Windows will show a blue *"Windows protected your PC"* dialog the first time you run it. Here's how to proceed:
+>
+> 1. Click **"More info"** (small link below the warning text)
+> 2. Click **"Run anyway"**
+>
+> This warning appears for all community-built executables that have not been commercially signed. You can review the full source code in this repository.
+
+> [!NOTE]
+> **No API Keys Required:** The application now comes embedded with default public API keys so you can test it immediately!
+> 
+> However, for long-term use, you should add your own private keys in the **Settings** menu. You can enter at least one of:
+> - **Azure Speech key** — for Azure engine (requires Azure account)
+> - **Gemini API key** — for Gemini engine ([free tier available](https://aistudio.google.com/))
+>
+> Settings are saved locally in `config.json` next to the `.exe` (or in `%APPDATA%\LiveTranslate\` if the exe is in a restricted folder).
 ---
 
 ## ⚙️ Settings & Personalization
@@ -47,6 +76,7 @@ LiveTranslate supports several bi-directional language presets out of the box:
 -   **EN ↔ JA**: English and Japanese
 -   **EN ↔ KO**: English and Korean
 -   **EN ↔ FR**: English and French
+-   **EN ↔ IT**: English and Italian
 
 You can switch between these presets instantly via the **Settings** window.
 

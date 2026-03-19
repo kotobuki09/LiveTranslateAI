@@ -67,6 +67,7 @@ class App:
             on_settings=self._open_settings,
             on_quit=self._quit,
             on_show_subtitle=self._open_show_subtitle,
+            is_listening_fn=lambda: self._listening,
         )
 
         # Poll result_queue every 50ms on Qt main thread
@@ -91,6 +92,7 @@ class App:
     def _create_engine(self):
         if config.STT_ENGINE == "gemini":
             engine = GeminiClient(audio_queue=self._audio.audio_queue)
+            engine.on_reconnect = lambda msg: self._bridge.show_error.emit(msg)
             logger.info("Using GEMINI Live API STT")
         else:
             engine = AzureSpeechClient(audio_queue=self._audio.audio_queue)
@@ -136,9 +138,14 @@ class App:
     # ── Internet check ────────────────────────────────────────────────
 
     def _check_internet(self) -> bool:
+        """Check connectivity against the endpoint relevant to the active STT engine."""
+        if config.STT_ENGINE == "gemini":
+            host = "generativelanguage.googleapis.com"
+        else:
+            host = "api.cognitive.microsofttranslator.com"
         try:
             socket.setdefaulttimeout(3)
-            socket.getaddrinfo("api.cognitive.microsofttranslator.com", 443)
+            socket.getaddrinfo(host, 443)
             return True
         except OSError:
             return False
@@ -189,6 +196,12 @@ class App:
         self._listening = False
         self._audio.stop()
         self._engine.stop()
+        # Drain any stale audio chunks so they don't bleed into the next session
+        while not self._audio.audio_queue.empty():
+            try:
+                self._audio.audio_queue.get_nowait()
+            except Exception:
+                break
         self._subtitle.clear()
         self._subtitle.set_listening(False)
         self._history.clear()

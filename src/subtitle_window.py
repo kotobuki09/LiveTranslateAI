@@ -364,6 +364,7 @@ class SubtitleWindow(QWidget):
             f"font-weight: 800; "
             f"background: transparent;"
         )
+        self.setWindowOpacity(config.WINDOW_OPACITY)
         self.update()
 
     def set_listening(self, active: bool):
@@ -389,8 +390,20 @@ class SubtitleWindow(QWidget):
         self._last_original = original
         self._last_trans = translation
 
-        self._last_original = original
-        self._last_trans = translation
+        # Typewriter snap for MAX_HISTORY > 1:
+        # If the new target is a multi-line string whose earlier lines we've
+        # already typed, snap _curr_*_text to those lines so the typewriter
+        # only animates the new (last) sentence instead of catching up from scratch.
+        if "\n" in original and self._curr_orig_text:
+            lines = original.split("\n")
+            already = "\n".join(lines[:-1])  # all but last sentence
+            if already and original.startswith(already) and len(already) > len(self._curr_orig_text):
+                self._curr_orig_text = already
+        if "\n" in translation and self._curr_trans_text:
+            lines = translation.split("\n")
+            already = "\n".join(lines[:-1])
+            if already and translation.startswith(already) and len(already) > len(self._curr_trans_text):
+                self._curr_trans_text = already
 
         # Restore normal translation colour (may have been set to red by show_error)
         if self._is_error:
@@ -400,16 +413,11 @@ class SubtitleWindow(QWidget):
             )
             self._is_error = False
 
-        # Labels are now updated via _on_typewriter_tick
-        pass
-
         # Language badge from active pair config
         pair = config.SUPPORTED_LANG_PAIRS.get(config.LANG_PAIR,
                                                 config.SUPPORTED_LANG_PAIRS["en-vi"])
         badge_map = pair["badge"]
         self.lang_badge.setText(badge_map.get(source_lang, pair["display"]))
-
-        pass
 
         if was_empty and (original or translation):
             self.setWindowOpacity(0.0)
@@ -418,6 +426,7 @@ class SubtitleWindow(QWidget):
             self._fade_in()
         elif not self.isVisible():
             self.show()
+
 
     def show_error(self, message: str):
         """Display an error message in the subtitle area."""

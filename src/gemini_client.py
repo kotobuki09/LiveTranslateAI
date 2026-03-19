@@ -41,7 +41,8 @@ class GeminiClient:
         self.audio_queue = audio_queue
         self.result_queue: queue.Queue[dict] = queue.Queue()
         self.is_running = False
-        self.on_failure = None  # type: ignore  # callable(str) | None
+        self.on_failure = None    # type: ignore  # callable(str) | None
+        self.on_reconnect = None  # type: ignore  # callable(str) | None — transient errors
         self._thread: "threading.Thread | None" = None
         self._local_translator = None
 
@@ -91,6 +92,11 @@ class GeminiClient:
                     if self.on_failure:
                         self.on_failure("Gemini STT stopped after too many errors.")
                     break
+                # Notify UI so the user sees a transient reconnecting message
+                if self.on_reconnect:
+                    self.on_reconnect(
+                        f"⟳ Reconnecting… (attempt {consecutive_errors}/{config.MAX_RETRIES})"
+                    )
                 time.sleep(min(backoff, 8.0))
                 backoff *= 2
         self.is_running = False

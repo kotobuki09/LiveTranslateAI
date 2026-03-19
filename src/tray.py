@@ -37,12 +37,14 @@ def _generate_icon(active: bool = False) -> Image.Image:
 class TrayManager:
     """System tray icon with Start / Stop / Settings / Language Pair menu."""
 
-    def __init__(self, on_start, on_stop, on_settings, on_quit, on_show_subtitle=None):
+    def __init__(self, on_start, on_stop, on_settings, on_quit,
+                 on_show_subtitle=None, is_listening_fn=None):
         self._on_start_cb = on_start
         self._on_stop_cb = on_stop
         self._on_settings_cb = on_settings
         self._on_quit_cb = on_quit
         self._on_show_subtitle_cb = on_show_subtitle
+        self._is_listening_fn = is_listening_fn  # callable() → bool
         self._icon: "pystray.Icon | None" = None
         self._is_listening = False
 
@@ -67,7 +69,13 @@ class TrayManager:
         save_settings(settings)
         config.LANG_PAIR = pair_key
         pair_info = config.SUPPORTED_LANG_PAIRS.get(pair_key, {})
-        self.notify(f"Language pair: {pair_info.get('display', pair_key)}")
+        if self._is_listening_fn and self._is_listening_fn():
+            self.notify(
+                f"Language pair → {pair_info.get('display', pair_key)}  "
+                f"(stop & restart listening to apply)"
+            )
+        else:
+            self.notify(f"Language pair: {pair_info.get('display', pair_key)}")
 
     def _build_menu_items(self) -> list:
         # Language pair submenu

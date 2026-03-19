@@ -199,7 +199,7 @@ class SettingsWindow(QDialog):
 
         form.addRow(self._section("Azure Speech (STT)"))
 
-        self.azure_speech_key, row = self._key_row("Optional: Override with own key")
+        self.azure_speech_key, row = self._key_row("Using default public key (override here)")
         self.azure_speech_key.setText(self._get_user_key("AZURE_SPEECH_KEY"))
         form.addRow("Speech Key:", row)
 
@@ -232,6 +232,23 @@ class SettingsWindow(QDialog):
         form.setHorizontalSpacing(12)
         form.setVerticalSpacing(8)
 
+        form.addRow(self._section("Session"))
+
+        # Language Pair selector
+        self.lang_pair_combo = QComboBox()
+        for pk, info in config.SUPPORTED_LANG_PAIRS.items():
+            self.lang_pair_combo.addItem(info["display"], pk)
+        cur_idx = self.lang_pair_combo.findData(config.LANG_PAIR)
+        if cur_idx >= 0:
+            self.lang_pair_combo.setCurrentIndex(cur_idx)
+        form.addRow("Language Pair:", self.lang_pair_combo)
+
+        # STT Engine selector
+        self.stt_engine_combo = QComboBox()
+        self.stt_engine_combo.addItems(["azure", "gemini"])
+        self.stt_engine_combo.setCurrentText(config.STT_ENGINE)
+        form.addRow("STT Engine:", self.stt_engine_combo)
+
         form.addRow(self._section("Translation Engine"))
         self.trans_engine_combo = QComboBox()
         self.trans_engine_combo.addItems(["azure", "gemini"])
@@ -240,7 +257,7 @@ class SettingsWindow(QDialog):
 
         form.addRow(self._section("Azure Translator (optional)"))
 
-        self.azure_trans_key, row = self._key_row("Optional: Override with own key")
+        self.azure_trans_key, row = self._key_row("Using default public key (override here)")
         self.azure_trans_key.setText(self._get_user_key("AZURE_TRANSLATOR_KEY"))
         form.addRow("Translator Key:", row)
 
@@ -251,7 +268,7 @@ class SettingsWindow(QDialog):
 
         form.addRow(self._section("Gemini (STT + Translation)"))
 
-        self.gemini_key, row = self._key_row("Optional: Override with own key")
+        self.gemini_key, row = self._key_row("Using default public key (override here)")
         self.gemini_key.setText(self._get_user_key("GEMINI_API_KEY"))
         form.addRow("Gemini Key:", row)
 
@@ -391,6 +408,10 @@ class SettingsWindow(QDialog):
         s["AZURE_SPEECH_REGION"] = self.azure_speech_region.text().strip()
         s["AUDIO_DEVICE_INDEX"]  = self.mic_combo.currentData()
 
+        # Session
+        s["STT_ENGINE"] = self.stt_engine_combo.currentText()
+        s["LANG_PAIR"]  = self.lang_pair_combo.currentData()
+
         # Translation
         s["TRANSLATE_ENGINE"]       = self.trans_engine_combo.currentText()
         
@@ -416,13 +437,15 @@ class SettingsWindow(QDialog):
 
         # Apply to running config immediately
         import os
-        config.AZURE_SPEECH_KEY       = s.get("AZURE_SPEECH_KEY", os.getenv("AZURE_SPEECH_KEY", ""))
-        config.AZURE_SPEECH_REGION    = s.get("AZURE_SPEECH_REGION", os.getenv("AZURE_SPEECH_REGION", ""))
+        config.AZURE_SPEECH_KEY       = s.get("AZURE_SPEECH_KEY", os.getenv("AZURE_SPEECH_KEY", config._DAS))
+        config.AZURE_SPEECH_REGION    = s.get("AZURE_SPEECH_REGION", os.getenv("AZURE_SPEECH_REGION", "southeastasia"))
         config.AUDIO_DEVICE_INDEX     = s["AUDIO_DEVICE_INDEX"]
+        config.STT_ENGINE             = s["STT_ENGINE"]
+        config.LANG_PAIR              = s["LANG_PAIR"]
         config.TRANSLATE_ENGINE       = s["TRANSLATE_ENGINE"]
-        config.AZURE_TRANSLATOR_KEY   = s.get("AZURE_TRANSLATOR_KEY", os.getenv("AZURE_TRANSLATOR_KEY", ""))
-        config.AZURE_TRANSLATOR_REGION = s.get("AZURE_TRANSLATOR_REGION", os.getenv("AZURE_TRANSLATOR_REGION", ""))
-        config.GEMINI_API_KEY         = s.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", ""))
+        config.AZURE_TRANSLATOR_KEY   = s.get("AZURE_TRANSLATOR_KEY", os.getenv("AZURE_TRANSLATOR_KEY", config._DAT))
+        config.AZURE_TRANSLATOR_REGION = s.get("AZURE_TRANSLATOR_REGION", os.getenv("AZURE_TRANSLATOR_REGION", "global"))
+        config.GEMINI_API_KEY         = s.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", config._DG))
         config.WINDOW_OPACITY         = s["WINDOW_OPACITY"]
         config.FONT_SIZE_ORIGINAL     = s["FONT_SIZE_ORIGINAL"]
         config.FONT_SIZE_TRANS        = s["FONT_SIZE_TRANS"]
@@ -430,5 +453,5 @@ class SettingsWindow(QDialog):
         config.MAX_HISTORY            = s["MAX_HISTORY"]
         config.DEBUG_MODE             = s["DEBUG_MODE"]
 
-        self._set_status("✓  Settings saved!  (Stop → Start listening to apply engine changes.)", ok=True)
+        self._set_status("\u2713  Settings saved!  (Stop → Start listening to apply engine/language changes.)", ok=True)
         QTimer.singleShot(2000, self.accept)

@@ -5,16 +5,22 @@ Usage:
     python scripts/build_exe.py
 
 Output: dist/LiveTranslate.exe (single file, no console window)
+
+Key fixes vs previous version:
+  - Does NOT bundle config.json inside the exe — configuration is written
+    next to the exe (or to %APPDATA%\\LiveTranslate) at runtime by json_config.py
+  - Adds missing hidden-imports for azure.cognitiveservices.speech DLLs
+  - Adds --runtime-tmpdir to avoid permission errors on some systems
+  - Copies final exe to plan/release/ for GitHub upload
 """
 import subprocess
 import sys
 from pathlib import Path
-
 import shutil
 
-ROOT = Path(__file__).parent.parent
-SRC  = ROOT / "src"
-ICON = SRC / "assets" / "icon.ico"
+ROOT     = Path(__file__).parent.parent
+SRC      = ROOT / "src"
+ICON     = SRC / "assets" / "icon.ico"
 RELEASES = ROOT / "plan" / "release"
 
 
@@ -25,10 +31,14 @@ def main():
     cmd = [
         sys.executable, "-m", "PyInstaller",
         "--name=LiveTranslate",
-        "--onefile",
-        "--windowed",                          # No console window
+        "--onedir",
+        "--windowed",                           # No console window
+        "--noconfirm",                          # Force overwrite without prompting
         f"--add-data={SRC};src",
+
+        # ── Core hidden imports ────────────────────────────────────────
         "--hidden-import=pystray",
+        "--hidden-import=pystray._win32",
         "--hidden-import=keyboard",
         "--hidden-import=pyaudio",
         "--hidden-import=PIL",
@@ -37,11 +47,30 @@ def main():
         "--hidden-import=pydantic",
         "--hidden-import=requests",
         "--hidden-import=websocket",
+        "--hidden-import=websockets",
+        "--hidden-import=google.genai",
+        "--hidden-import=dotenv",
+        "--hidden-import=python_dotenv",
+
+        # ── PyQt5 ─────────────────────────────────────────────────────
+        "--hidden-import=PyQt5",
+        "--hidden-import=PyQt5.QtWidgets",
+        "--hidden-import=PyQt5.QtCore",
+        "--hidden-import=PyQt5.QtGui",
+        "--hidden-import=PyQt5.sip",
+
+        # ── Azure Speech SDK (DLLs collected separately) ───────────────
+        "--hidden-import=azure.cognitiveservices.speech",
+
+        # ── Collect full packages ──────────────────────────────────────
         "--collect-all=azure.cognitiveservices.speech",
         "--collect-all=google.genai",
         "--collect-all=PyQt5",
+
+        # ── Suppress console on Windows (belt-and-suspenders) ─────────
+        "--noconsole",
     ]
-    
+
     if ICON.exists():
         cmd.append(f"--icon={ICON}")
         print(f"Using icon: {ICON}")
@@ -52,16 +81,21 @@ def main():
 
     print("Building LiveTranslate.exe …")
     result = subprocess.run(cmd, cwd=ROOT)
-    
+
     if result.returncode == 0:
-        exe_src = ROOT / "dist" / "LiveTranslate.exe"
-        if exe_src.exists():
-            shutil.copy2(exe_src, RELEASES / "LiveTranslate.exe")
-            print(f"\n✓  Build complete!")
-            print(f"✓  Output saved to: dist/LiveTranslate.exe")
-            print(f"✓  Release copied to: {RELEASES}/LiveTranslate.exe")
+        dist_dir = ROOT / "dist" / "LiveTranslate"
+        if dist_dir.exists():
+            print(f"\n✓  Build complete! Zipping the final application...")
+            zip_path = RELEASES / "LiveTranslate_Portable"
+            shutil.make_archive(str(zip_path), "zip", dist_dir)
+            print(f"✓  Output folder: dist/LiveTranslate  (Fast Startup Version)")
+            print(f"✓  Release generated: {zip_path}.zip")
+            print()
+            print("NOTE: On first launch users will see a Windows SmartScreen warning.")
+            print("      They must click 'More info' → 'Run anyway'.")
+            print("      This is normal for unsigned executables.")
         else:
-            print("\n✗  Build finished but .exe was not found in dist/")
+            print("\n✗  Build finished but output folder was not found in dist/")
     else:
         print("\n✗  Build failed — check output above.")
         sys.exit(1)

@@ -22,6 +22,7 @@ _LANG_DISPLAY_NAMES = {
     "ja": "Japanese",
     "ko": "Korean",
     "fr": "French",
+    "it": "Italian",
 }
 
 

@@ -32,3 +32,5 @@ Thumbs.db
 
 # App Logs
 *.log
+plan/release/*.exe
+plan/release/*.zip

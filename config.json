@@ -1,5 +1,5 @@
 {
-    "STT_ENGINE": "local",
+    "STT_ENGINE": "azure",
     "TRANSLATE_ENGINE": "azure",
     "AZURE_SPEECH_REGION": "southeastasia",
     "AUDIO_DEVICE_INDEX": -1,
@@ -10,9 +10,9 @@
     "AUTO_CLEAR_SEC": 4,
     "MAX_HISTORY": 1,
     "DEBUG_MODE": false,
-    "SUBTITLE_WIDTH": 1418,
-    "SUBTITLE_HEIGHT": 407,
-    "SUBTITLE_X": 654,
-    "SUBTITLE_Y": 1401,
-    "LANG_PAIR": "en-vi"
+    "LANG_PAIR": "en-vi",
+    "SUBTITLE_WIDTH": 3648,
+    "SUBTITLE_HEIGHT": 400,
+    "SUBTITLE_X": 96,
+    "SUBTITLE_Y": 1650
 }
