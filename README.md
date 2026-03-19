@@ -22,6 +22,54 @@
 
 ---
 
+## 📺 Demo & Website
+
+### The Application Overlay
+![LiveTranslate Demo](docs/demo.png)
+
+### The Official Website
+![LiveTranslate Website](docs/website.png)
+
+---
+
+## ✨ Key Features
+
+-   **🚀 Near-Instant Translation**: Leverages **Google Gemini 2.0 Flash** or **Azure Speech Services** for real-time performance.
+-   **🖥️ Non-Intrusive UI**:
+    -   Semi-transparent overlay stays on top of meetings, videos, or games.
+    -   Fully draggable and resizable (via settings).
+    -   Interactive toggle: Double-click to instantly hide/show text.
+-   **⌨️ Global Hotkey**: `Ctrl+Shift+L` to toggle listening from any application.
+-   **📥 Tray-Based**: Operates entirely from the system tray for a clean, taskbar-free workspace.
+-   **🎨 Customizable**: Change font size, colors, and window opacity to match your preference.
+
+---
+
+## 🛠️ How It Works
+
+LiveTranslate uses a modular pipeline to ensure the lowest possible latency between speech and subtitle display.
+
+```mermaid
+graph LR
+    A[🎤 Mic Input] --> B[🔉 Audio Capture]
+    B --> C{AI Engine}
+    C -->|Gemini Live| D[✨ Real-time STT + Trans]
+    C -->|Azure Speech| E[🎙️ Azure STT]
+    E --> F[🌐 Azure Translator]
+    D --> G[🖥️ Subtitle Overlay]
+    F --> G
+    G --> H[🎞️ Floating Window]
+```
+
+### The Pipeline:
+1.  **Capture**: `PyAudio` captures raw 16kHz audio in 100ms chunks.
+2.  **Processing**: 
+    - **Google Gemini**: Uses the Gemini 2.0 Flash Live API (WebSocket) for simultaneous transcription and translation (lowest latency).
+    - **Azure**: Uses Azure Cognitive Services for high-fidelity speech-to-text followed by neural translation.
+3.  **Display**: A custom `PyQt5` window renders text with semi-transparency and "stay-on-top" priority.
+
+---
+
 ## 📥 Download & Quick Start
 
 We provide two ways to run the application for Windows:
@@ -88,54 +136,6 @@ LiveTranslate supports several bi-directional language presets out of the box:
 -   **EN ↔ IT**: English and Italian
 
 You can switch between these presets instantly via the **Settings** window.
-
----
-
-## 📺 Demo & Website
-
-### The Application Overlay
-![LiveTranslate Demo](docs/demo.png)
-
-### The Official Website
-![LiveTranslate Website](docs/website.png)
-
----
-
-## 🛠️ How It Works
-
-LiveTranslate uses a modular pipeline to ensure the lowest possible latency between speech and subtitle display.
-
-```mermaid
-graph LR
-    A[🎤 Mic Input] --> B[🔉 Audio Capture]
-    B --> C{AI Engine}
-    C -->|Gemini Live| D[✨ Real-time STT + Trans]
-    C -->|Azure Speech| E[🎙️ Azure STT]
-    E --> F[🌐 Azure Translator]
-    D --> G[🖥️ Subtitle Overlay]
-    F --> G
-    G --> H[🎞️ Floating Window]
-```
-
-### The Pipeline:
-1.  **Capture**: `PyAudio` captures raw 16kHz audio in 100ms chunks.
-2.  **Processing**: 
-    - **Google Gemini**: Uses the Gemini 2.0 Flash Live API (WebSocket) for simultaneous transcription and translation (lowest latency).
-    - **Azure**: Uses Azure Cognitive Services for high-fidelity speech-to-text followed by neural translation.
-3.  **Display**: A custom `PyQt5` window renders text with semi-transparency and "stay-on-top" priority.
-
----
-
-## ✨ Key Features
-
--   **🚀 Near-Instant Translation**: Leverages **Google Gemini 2.0 Flash** or **Azure Speech Services** for real-time performance.
--   **🖥️ Non-Intrusive UI**:
-    -   Semi-transparent overlay stays on top of meetings, videos, or games.
-    -   Fully draggable and resizable (via settings).
-    -   Interactive toggle: Double-click to instantly hide/show text.
--   **⌨️ Global Hotkey**: `Ctrl+Shift+L` to toggle listening from any application.
--   **📥 Tray-Based**: Operates entirely from the system tray for a clean, taskbar-free workspace.
--   **🎨 Customizable**: Change font size, colors, and window opacity to match your preference.
 
 ---
 
