@@ -9,6 +9,15 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/kotobuki09/LiveTranslate/graphs/commit-activity)
 
+<div align="center">
+  <a href="https://www.producthunt.com/products/livetranslate?launch=livetranslate" target="_blank">
+    <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=livetranslate&theme=light" alt="LiveTranslate - Real-Time AI Speech Translation Overlay | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" />
+  </a>
+  <br>
+  <strong>🌐 Official Website:</strong> <a href="https://livetranslate-ai.netlify.app/">livetranslate-ai.netlify.app</a>
+</div>
+<br>
+
 **LiveTranslate** is a low-latency, real-time speech translation subtitle overlay for Windows. It captures your microphone audio, transcribes it using state-of-the-art AI, and provides instant translation in a sleek, semi-transparent floating window.
 
 ---
@@ -82,9 +91,13 @@ You can switch between these presets instantly via the **Settings** window.
 
 ---
 
-## 📺 Demo
+## 📺 Demo & Website
 
+### The Application Overlay
 ![LiveTranslate Demo](docs/demo.png)
+
+### The Official Website
+![LiveTranslate Website](docs/website.png)
 
 ---
 
