@@ -1,3 +1,16 @@
+# 🚀 LiveTranslate v1.1.0 Market Ready Release
+
+We are excited to announce LiveTranslate v1.1.0! This release focuses on professionalizing the project's web presence and expanding its capabilities.
+
+## ✨ What's New in v1.1
+* **Official Marketing Website**: Launched a stunning, modern landing page with interactive features, FAQ, and detailed documentation.
+* **Product Hunt Debut**: LiveTranslate is now on Product Hunt! Check us out and support the project.
+* **Italian Language Support**: Added English ↔ Italian (EN ↔ IT) as a new bi-directional language preset.
+* **Improved Branding**: Updated icons and application theme for a premium, cohesive look.
+* **README Refinement**: Streamlined the main project documentation for better clarity and accessibility.
+
+---
+
 # 🚀 LiveTranslate v1.0.0 Official Release
 
 We are incredibly excited to officially launch LiveTranslate v1.0.0! A fast, reliable, privacy-focused speech translation subtitle widget.
