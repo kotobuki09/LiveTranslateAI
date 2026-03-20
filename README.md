@@ -28,7 +28,7 @@
 ![LiveTranslate Demo](docs/demo.png)
 
 ### The Official Website
-![LiveTranslate Website](docs/website.png)
+![LiveTranslate Website](docs/website1.png)
 
 ---
 
