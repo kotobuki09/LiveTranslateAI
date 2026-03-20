@@ -129,10 +129,14 @@ Right-click the tray icon -> **Settings** to configure:
 LiveTranslate supports several bi-directional language presets out of the box:
 
 -   **EN ↔ VI**: English and Vietnamese (Default)
--   **EN ↔ ZH**: English and Chinese (Simplified)
 -   **EN ↔ JA**: English and Japanese
+-   **EN ↔ ZH**: English and Chinese (Simplified)
 -   **EN ↔ KO**: English and Korean
+-   **EN ↔ ES**: English and Spanish
 -   **EN ↔ FR**: English and French
+-   **EN ↔ DE**: English and German
+-   **EN ↔ RU**: English and Russian
+-   **EN ↔ PT**: English and Portuguese
 -   **EN ↔ IT**: English and Italian
 
 You can switch between these presets instantly via the **Settings** window.
