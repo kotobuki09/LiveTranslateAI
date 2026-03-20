@@ -1,3 +1,15 @@
+# 🚀 LiveTranslate v1.2.0 Professional Release
+
+We are excited to announce LiveTranslate v1.2.0! This release includes important stability improvements, versioning updates, and a refined user interface.
+
+## ✨ What's New in v1.2.0
+* **Refined UI**: Added version numbering to the tray icon for easier tracking.
+* **Internal Versioning**: Standardized version management across code and installer.
+* **Build Optimization**: Improved the build pipeline for faster and more reliable distribution.
+* **Performance**: Minor tweaks to the Gemini and Azure engine handshakes for lower first-word latency.
+
+---
+
 # 🚀 LiveTranslate v1.1.0 Market Ready Release
 
 We are excited to announce LiveTranslate v1.1.0! This release focuses on professionalizing the project's web presence and expanding its capabilities.

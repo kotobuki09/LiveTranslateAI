@@ -4,6 +4,7 @@ os.environ.pop("GOOGLE_API_KEY", None)
 
 from dotenv import load_dotenv
 load_dotenv()
+VERSION = "1.2.0"
 
 # ── Audio ───────────────────────────────────────────────────────────────
 SAMPLE_RATE = 16000

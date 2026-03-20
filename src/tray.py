@@ -148,7 +148,7 @@ class TrayManager:
         self._icon = pystray.Icon(
             name="LiveTranslate",
             icon=image,
-            title="LiveTranslate — Right-click to start",
+            title=f"LiveTranslate v{config.VERSION} — Right-click to start",
             menu=pystray.Menu(*self._build_menu_items()),
         )
         threading.Thread(target=self._icon.run, daemon=True).start()

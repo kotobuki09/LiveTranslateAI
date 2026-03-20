@@ -5,7 +5,7 @@
 [Setup]
 AppId={{5AB3F6D8-19EE-4D2A-B68C-28D8E9F74C78}
 AppName=LiveTranslate
-AppVersion=1.1.0
+AppVersion=1.2.0
 AppPublisher=kngo
 AppPublisherURL=https://github.com/kotobuki09/LiveTranslate
 AppSupportURL=https://github.com/kotobuki09/LiveTranslate/issues
