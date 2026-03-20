@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" alt="LiveTranslate Logo" width="200">
+  <img src="website/icons/icon-512.png" alt="LiveTranslate Icon" width="200">
 </p>
 
 # 🎙️ LiveTranslate: Real-Time Speech Translation Overlay

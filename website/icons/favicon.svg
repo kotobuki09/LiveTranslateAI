@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a1628"/>
+      <stop offset="100%" style="stop-color:#0f1f3d"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="100" height="100" rx="22" ry="22" fill="url(#bg)"/>
+
+  <!-- Mic capsule body -->
+  <rect x="38" y="12" width="24" height="38" rx="12" ry="12" fill="white"/>
+
+  <!-- Mic stand arc -->
+  <path d="M 30 46 Q 30 64 50 64 Q 70 64 70 46" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  <!-- Mic stand stem -->
+  <line x1="50" y1="64" x2="50" y2="72" stroke="white" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Mic stand base -->
+  <line x1="40" y1="72" x2="60" y2="72" stroke="white" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Speech bubble body -->
+  <rect x="28" y="76" width="44" height="20" rx="5" ry="5" fill="none" stroke="white" stroke-width="2.5"/>
+  <!-- Bubble tail -->
+  <polygon points="38,96 34,102 44,96" fill="white"/>
+
+  <!-- Subtitle lines inside bubble -->
+  <line x1="33" y1="83" x2="67" y2="83" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Teal accent line -->
+  <line x1="33" y1="90" x2="55" y2="90" stroke="#00d4aa" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
