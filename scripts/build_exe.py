@@ -87,9 +87,14 @@ def main():
         if dist_dir.exists():
             print(f"\n✓  Build complete! Zipping the final application...")
             zip_path = RELEASES / "LiveTranslate_Portable"
-            shutil.make_archive(str(zip_path), "zip", dist_dir)
+            try:
+                shutil.make_archive(str(zip_path), "zip", dist_dir)
+                print(f"✓  Release generated: {zip_path}.zip")
+            except Exception as e:
+                print(f"⚠  Warning: Could not create zip archive: {e}")
+                print("   (Proceeding anyway — dist/ folder is still available)")
+            
             print(f"✓  Output folder: dist/LiveTranslate  (Fast Startup Version)")
-            print(f"✓  Release generated: {zip_path}.zip")
             print()
             print("NOTE: On first launch users will see a Windows SmartScreen warning.")
             print("      They must click 'More info' → 'Run anyway'.")
