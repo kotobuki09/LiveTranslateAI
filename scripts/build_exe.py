@@ -22,6 +22,7 @@ ROOT     = Path(__file__).parent.parent
 SRC      = ROOT / "src"
 ICON     = SRC / "assets" / "icon.ico"
 RELEASES = ROOT / "plan" / "release"
+sys.path.insert(0, str(ROOT / "src"))
 
 
 def main():
@@ -69,6 +70,7 @@ def main():
 
         # ── Suppress console on Windows (belt-and-suspenders) ─────────
         "--noconsole",
+        f"--version-file={ROOT / 'scripts' / 'version_info.txt'}",
     ]
 
     if ICON.exists():
@@ -86,7 +88,8 @@ def main():
         dist_dir = ROOT / "dist" / "LiveTranslate"
         if dist_dir.exists():
             print(f"\n✓  Build complete! Zipping the final application...")
-            zip_path = RELEASES / "LiveTranslate_Portable"
+            import config
+            zip_path = RELEASES / f"LiveTranslate_v{config.VERSION}_Portable"
             try:
                 shutil.make_archive(str(zip_path), "zip", dist_dir)
                 print(f"✓  Release generated: {zip_path}.zip")

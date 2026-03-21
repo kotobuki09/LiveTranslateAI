@@ -11,8 +11,8 @@
     "MAX_HISTORY": 1,
     "DEBUG_MODE": false,
     "LANG_PAIR": "en-vi",
-    "SUBTITLE_WIDTH": 3648,
-    "SUBTITLE_HEIGHT": 400,
-    "SUBTITLE_X": 96,
-    "SUBTITLE_Y": 1650
+    "SUBTITLE_WIDTH": 2126,
+    "SUBTITLE_HEIGHT": 410,
+    "SUBTITLE_X": 665,
+    "SUBTITLE_Y": 1502
 }

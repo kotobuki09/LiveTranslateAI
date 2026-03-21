@@ -48,10 +48,18 @@ class TrayManager:
         self._icon: "pystray.Icon | None" = None
         self._is_listening = False
 
-    def _get_icon_image(self) -> Image.Image:
+    def _get_icon_image(self, active: bool = False) -> Image.Image:
         if ICON_PATH.exists():
-            return Image.open(ICON_PATH)
-        return _generate_icon(active=False)
+            img = Image.open(ICON_PATH).convert("RGBA")
+            if active:
+                draw = ImageDraw.Draw(img)
+                size = img.size[0]
+                r = size // 5
+                # draw a teal indicator dot in top-right to show listening state
+                draw.ellipse([size - 2*r, 0, size, 2*r], fill=(0, 206, 166, 255))
+                draw.ellipse([size - 2*r, 0, size, 2*r], outline=(0, 150, 120, 255), width=r//4)
+            return img
+        return _generate_icon(active=active)
 
     def _set_engine(self, engine_type: str, engine_val: str):
         settings = load_settings()
@@ -107,30 +115,30 @@ class TrayManager:
                 enabled=lambda item: self._is_listening,
             ),
             pystray.Menu.SEPARATOR,
-            pystray.MenuItem("Language Pair", pystray.Menu(*lang_items)),
-            pystray.MenuItem("STT Engine", pystray.Menu(
+            pystray.MenuItem("🌐 Language Pair", pystray.Menu(*lang_items)),
+            pystray.MenuItem("🎙 STT Engine", pystray.Menu(
                 pystray.MenuItem(
-                    "Azure",
+                    "☁️ Azure",
                     lambda icon, item: self._set_engine("STT_ENGINE", "azure"),
                     checked=lambda item: config.STT_ENGINE == "azure",
                     radio=True,
                 ),
                 pystray.MenuItem(
-                    "Gemini",
+                    "✨ Gemini",
                     lambda icon, item: self._set_engine("STT_ENGINE", "gemini"),
                     checked=lambda item: config.STT_ENGINE == "gemini",
                     radio=True,
                 ),
             )),
-            pystray.MenuItem("Translation Engine", pystray.Menu(
+            pystray.MenuItem("🤖 Translation Engine", pystray.Menu(
                 pystray.MenuItem(
-                    "Azure",
+                    "☁️ Azure",
                     lambda icon, item: self._set_engine("TRANSLATE_ENGINE", "azure"),
                     checked=lambda item: config.TRANSLATE_ENGINE == "azure",
                     radio=True,
                 ),
                 pystray.MenuItem(
-                    "Gemini",
+                    "✨ Gemini",
                     lambda icon, item: self._set_engine("TRANSLATE_ENGINE", "gemini"),
                     checked=lambda item: config.TRANSLATE_ENGINE == "gemini",
                     radio=True,
@@ -144,7 +152,7 @@ class TrayManager:
         ]
 
     def start(self):
-        image = self._get_icon_image()
+        image = self._get_icon_image(active=False)
         self._icon = pystray.Icon(
             name="LiveTranslate",
             icon=image,
@@ -165,7 +173,7 @@ class TrayManager:
         """Update tray icon and state to reflect listening status."""
         self._is_listening = active
         if self._icon:
-            self._icon.icon = _generate_icon(active=active)
+            self._icon.icon = self._get_icon_image(active=active)
             self._icon.title = (
                 "LiveTranslate — Listening…" if active else "LiveTranslate — Idle"
             )

@@ -4,7 +4,7 @@ os.environ.pop("GOOGLE_API_KEY", None)
 
 from dotenv import load_dotenv
 load_dotenv()
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 # ── Audio ───────────────────────────────────────────────────────────────
 SAMPLE_RATE = 16000
@@ -109,6 +109,42 @@ SUPPORTED_LANG_PAIRS: dict = {
         "lang_a": "en", "lang_b": "it",
         "display": "EN ↔ IT",
         "badge": {"en": "🎙 EN → IT", "it": "🎙 IT → EN"},
+    },
+    "en-es": {
+        "azure_speech_detect": ["en-US", "es-ES"],
+        "azure_speech_targets": ["es", "en"],
+        "azure_translator_codes": {"en": "es", "es": "en"},
+        "azure_speech_map": {"en-US": "en", "es-ES": "es"},
+        "lang_a": "en", "lang_b": "es",
+        "display": "EN ↔ ES",
+        "badge": {"en": "🎙 EN → ES", "es": "🎙 ES → EN"},
+    },
+    "en-de": {
+        "azure_speech_detect": ["en-US", "de-DE"],
+        "azure_speech_targets": ["de", "en"],
+        "azure_translator_codes": {"en": "de", "de": "en"},
+        "azure_speech_map": {"en-US": "en", "de-DE": "de"},
+        "lang_a": "en", "lang_b": "de",
+        "display": "EN ↔ DE",
+        "badge": {"en": "🎙 EN → DE", "de": "🎙 DE → EN"},
+    },
+    "en-pt": {
+        "azure_speech_detect": ["en-US", "pt-BR"],
+        "azure_speech_targets": ["pt", "en"],
+        "azure_translator_codes": {"en": "pt", "pt": "en"},
+        "azure_speech_map": {"en-US": "en", "pt-BR": "pt"},
+        "lang_a": "en", "lang_b": "pt",
+        "display": "EN ↔ PT",
+        "badge": {"en": "🎙 EN → PT", "pt": "🎙 PT → EN"},
+    },
+    "en-ru": {
+        "azure_speech_detect": ["en-US", "ru-RU"],
+        "azure_speech_targets": ["ru", "en"],
+        "azure_translator_codes": {"en": "ru", "ru": "en"},
+        "azure_speech_map": {"en-US": "en", "ru-RU": "ru"},
+        "lang_a": "en", "lang_b": "ru",
+        "display": "EN ↔ RU",
+        "badge": {"en": "🎙 EN → RU", "ru": "🎙 RU → EN"},
     },
 }
 
