@@ -1,3 +1,32 @@
+# 🚀 LiveTranslate v1.4.0 — Quality & Visual Polish Release
+
+This release brings significant UX improvements, smarter translation quality controls, and a more polished subtitle display experience.
+
+## ✨ What's New in v1.4.0
+
+### 🎨 Visual Improvements
+* **History Dimming**: Older history sentences are now rendered with faded HTML rich-text spans, making the current caption visually distinct at a glance.
+* **Separator Line**: A thin separator line is drawn between the original and translation labels for cleaner layout.
+* **Interim Dimming**: Subtitle labels are dimmed during live-guess (interim) text to signal that the result is still being refined.
+* **Translation on Top**: New `TRANSLATION_ON_TOP` layout option lets users place the translated line above the original.
+
+### ⚡ Performance & Reliability
+* **Bounded Audio Queue**: Audio input now uses a drop-oldest backpressure queue (`AUDIO_QUEUE_MAX_CHUNKS` config) to prevent memory growth under heavy load.
+* **Debounced Interim Scheduling**: Interim translation requests are debounced to reduce churn and eliminate display flicker.
+* **Tighter Typewriter Rewind**: Rewind tolerance tightened to prevent jitter on small interim corrections.
+* **Listening State Guard**: Fixed false-listening state on audio startup failure; introduced `AppState` enum for robust state management.
+
+### 🔧 Fixes & Stability
+* **Crash Fix**: Caught `pystray` icon update errors to prevent `WinError 1402` crash on Windows.
+* **Language Detection**: Added confidence-aware language detection helper for more accurate source language identification.
+* **Shared AppState→UI Bindings**: `set_status_mode` now replaces the old boolean `set_listening`, unifying state propagation to the UI.
+
+### 🧪 Quality Mode Presets
+* Three presets — `fast`, `balanced`, `accurate` — control debounce and throttle knobs for translation responsiveness vs. accuracy.
+* Pipeline telemetry added via `METRICS_ENABLED` config flag for performance benchmarking.
+
+---
+
 # 🚀 LiveTranslate v1.3.0 Stability & Support Release
 
 We are excited to announce LiveTranslate v1.3.0! This release focuses on expanding language support, refining the UI with intuitive icons, and improving professional metadata.

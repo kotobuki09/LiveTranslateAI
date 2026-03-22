@@ -300,6 +300,19 @@ class SubtitleWindow(QWidget):
         )
         self._fade_anim.start()
 
+    @staticmethod
+    def _snap_to_word_boundary(current: str, target: str, step: int) -> str:
+        new_end = len(current) + step
+        candidate = target[:new_end]
+        if new_end >= len(target):
+            return target
+        search_region = candidate[len(current) :]
+        last_space_in_region = search_region.rfind(" ")
+        if last_space_in_region >= 0:
+            snap_pos = len(current) + last_space_in_region + 1
+            return target[:snap_pos]
+        return candidate
+
     def _on_typewriter_tick(self):
         """Drip characters smoothly from target strings. Tolerates small upstream STT corrections."""
         if not self._target_orig and not self._target_trans:
@@ -325,7 +338,14 @@ class SubtitleWindow(QWidget):
         if len(self._curr_orig_text) < len(self._target_orig):
             diff = len(self._target_orig) - len(self._curr_orig_text)
             step = max(1, diff // 8)
-            self._curr_orig_text = self._target_orig[: len(self._curr_orig_text) + step]
+            if config.TYPEWRITER_WORD_SNAP:
+                self._curr_orig_text = self._snap_to_word_boundary(
+                    self._curr_orig_text, self._target_orig, step
+                )
+            else:
+                self._curr_orig_text = self._target_orig[
+                    : len(self._curr_orig_text) + step
+                ]
             changed = True
 
         # Translation catch-up
@@ -343,9 +363,14 @@ class SubtitleWindow(QWidget):
         if len(self._curr_trans_text) < len(self._target_trans):
             diff = len(self._target_trans) - len(self._curr_trans_text)
             step = max(1, diff // 8)
-            self._curr_trans_text = self._target_trans[
-                : len(self._curr_trans_text) + step
-            ]
+            if config.TYPEWRITER_WORD_SNAP:
+                self._curr_trans_text = self._snap_to_word_boundary(
+                    self._curr_trans_text, self._target_trans, step
+                )
+            else:
+                self._curr_trans_text = self._target_trans[
+                    : len(self._curr_trans_text) + step
+                ]
             changed = True
 
         if changed:

@@ -15,7 +15,7 @@ def _generate_icon(active: bool = False) -> Image.Image:
     draw = ImageDraw.Draw(img)
 
     if active:
-        ring_color = (255, 215, 0, 255)   # gold
+        ring_color = (255, 215, 0, 255)  # gold
         inner_color = (40, 30, 0, 230)
         letter_color = (255, 215, 0, 255)
     else:
@@ -37,8 +37,15 @@ def _generate_icon(active: bool = False) -> Image.Image:
 class TrayManager:
     """System tray icon with Start / Stop / Settings / Language Pair menu."""
 
-    def __init__(self, on_start, on_stop, on_settings, on_quit,
-                 on_show_subtitle=None, is_listening_fn=None):
+    def __init__(
+        self,
+        on_start,
+        on_stop,
+        on_settings,
+        on_quit,
+        on_show_subtitle=None,
+        is_listening_fn=None,
+    ):
         self._on_start_cb = on_start
         self._on_stop_cb = on_stop
         self._on_settings_cb = on_settings
@@ -56,8 +63,12 @@ class TrayManager:
                 size = img.size[0]
                 r = size // 5
                 # draw a teal indicator dot in top-right to show listening state
-                draw.ellipse([size - 2*r, 0, size, 2*r], fill=(0, 206, 166, 255))
-                draw.ellipse([size - 2*r, 0, size, 2*r], outline=(0, 150, 120, 255), width=r//4)
+                draw.ellipse([size - 2 * r, 0, size, 2 * r], fill=(0, 206, 166, 255))
+                draw.ellipse(
+                    [size - 2 * r, 0, size, 2 * r],
+                    outline=(0, 150, 120, 255),
+                    width=r // 4,
+                )
             return img
         return _generate_icon(active=active)
 
@@ -85,11 +96,23 @@ class TrayManager:
         else:
             self.notify(f"Language pair: {pair_info.get('display', pair_key)}")
 
+    def _set_audio_source(self, source: str):
+        settings = load_settings()
+        settings["AUDIO_SOURCE"] = source
+        save_settings(settings)
+        config.AUDIO_SOURCE = source
+        if self._is_listening_fn and self._is_listening_fn():
+            self.notify(f"Audio source → {source}  (stop & restart listening to apply)")
+        else:
+            self.notify(
+                f"Audio source: {'🎙 Microphone' if source == 'mic' else '🔊 System Audio'}"
+            )
+
     def _build_menu_items(self) -> list:
         # Language pair submenu
         def make_action(pk_val):
             return lambda icon, item: self._set_lang_pair(pk_val)
-            
+
         def make_checked(pk_val):
             return lambda item: config.LANG_PAIR == pk_val
 
@@ -116,34 +139,61 @@ class TrayManager:
             ),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("🌐 Language Pair", pystray.Menu(*lang_items)),
-            pystray.MenuItem("🎙 STT Engine", pystray.Menu(
-                pystray.MenuItem(
-                    "☁️ Azure",
-                    lambda icon, item: self._set_engine("STT_ENGINE", "azure"),
-                    checked=lambda item: config.STT_ENGINE == "azure",
-                    radio=True,
+            pystray.MenuItem(
+                "🔊 Audio Source",
+                pystray.Menu(
+                    pystray.MenuItem(
+                        "🎙 Microphone",
+                        lambda icon, item: self._set_audio_source("mic"),
+                        checked=lambda item: config.AUDIO_SOURCE == "mic",
+                        radio=True,
+                    ),
+                    pystray.MenuItem(
+                        "🔊 System Audio",
+                        lambda icon, item: self._set_audio_source("system"),
+                        checked=lambda item: config.AUDIO_SOURCE == "system",
+                        radio=True,
+                    ),
                 ),
-                pystray.MenuItem(
-                    "✨ Gemini",
-                    lambda icon, item: self._set_engine("STT_ENGINE", "gemini"),
-                    checked=lambda item: config.STT_ENGINE == "gemini",
-                    radio=True,
+            ),
+            pystray.MenuItem(
+                "🎙 STT Engine",
+                pystray.Menu(
+                    pystray.MenuItem(
+                        "☁️ Azure",
+                        lambda icon, item: self._set_engine("STT_ENGINE", "azure"),
+                        checked=lambda item: config.STT_ENGINE == "azure",
+                        radio=True,
+                    ),
+                    pystray.MenuItem(
+                        "✨ Gemini",
+                        lambda icon, item: self._set_engine("STT_ENGINE", "gemini"),
+                        checked=lambda item: config.STT_ENGINE == "gemini",
+                        radio=True,
+                    ),
                 ),
-            )),
-            pystray.MenuItem("🤖 Translation Engine", pystray.Menu(
-                pystray.MenuItem(
-                    "☁️ Azure",
-                    lambda icon, item: self._set_engine("TRANSLATE_ENGINE", "azure"),
-                    checked=lambda item: config.TRANSLATE_ENGINE == "azure",
-                    radio=True,
+            ),
+            pystray.MenuItem(
+                "🤖 Translation Engine",
+                pystray.Menu(
+                    pystray.MenuItem(
+                        "☁️ Azure",
+                        lambda icon, item: self._set_engine(
+                            "TRANSLATE_ENGINE", "azure"
+                        ),
+                        checked=lambda item: config.TRANSLATE_ENGINE == "azure",
+                        radio=True,
+                    ),
+                    pystray.MenuItem(
+                        "✨ Gemini",
+                        lambda icon, item: self._set_engine(
+                            "TRANSLATE_ENGINE", "gemini"
+                        ),
+                        checked=lambda item: config.TRANSLATE_ENGINE == "gemini",
+                        radio=True,
+                    ),
                 ),
-                pystray.MenuItem(
-                    "✨ Gemini",
-                    lambda icon, item: self._set_engine("TRANSLATE_ENGINE", "gemini"),
-                    checked=lambda item: config.TRANSLATE_ENGINE == "gemini",
-                    radio=True,
-                ),
-            )),
+            ),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("⚙  Settings", self._on_settings),
             pystray.MenuItem("🖥  Show Subtitle", self._on_show_subtitle),

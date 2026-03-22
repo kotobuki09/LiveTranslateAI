@@ -5,7 +5,7 @@ os.environ.pop("GOOGLE_API_KEY", None)
 from dotenv import load_dotenv  # type: ignore[import-not-found]
 
 load_dotenv()
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 
 # ── Audio ───────────────────────────────────────────────────────────────
 SAMPLE_RATE = 16000
@@ -204,6 +204,7 @@ INTERIM_DIM_OPACITY = float(_user_conf.get("INTERIM_DIM_OPACITY", 0.6))
 SHOW_SEPARATOR = bool(_user_conf.get("SHOW_SEPARATOR", True))
 TRANSLATION_ON_TOP = bool(_user_conf.get("TRANSLATION_ON_TOP", False))
 HISTORY_DIM_OPACITY = float(_user_conf.get("HISTORY_DIM_OPACITY", 0.45))
+TYPEWRITER_WORD_SNAP = bool(_user_conf.get("TYPEWRITER_WORD_SNAP", True))
 
 # ── Debug ───────────────────────────────────────────────────────────────
 DEBUG_MODE = bool(

@@ -5,7 +5,7 @@
 [Setup]
 AppId={{5AB3F6D8-19EE-4D2A-B68C-28D8E9F74C78}
 AppName=LiveTranslate
-AppVersion=1.3.0
+AppVersion=1.4.0
 AppPublisher=kngo
 AppPublisherURL=https://github.com/kotobuki09/LiveTranslate
 AppSupportURL=https://github.com/kotobuki09/LiveTranslate/issues
@@ -15,7 +15,7 @@ DisableProgramGroupPage=yes
 ; To avoid the SmartScreen warning as much as possible, we don't force admin
 PrivilegesRequired=lowest
 OutputDir=..\plan\release
-OutputBaseFilename=LiveTranslate_v1.3.0_Setup
+OutputBaseFilename=LiveTranslate_v1.4.0_Setup
 SetupIconFile=..\src\assets\icon.ico
 Compression=lzma2/ultra64
 SolidCompression=yes

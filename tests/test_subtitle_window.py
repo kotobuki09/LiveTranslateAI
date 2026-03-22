@@ -193,3 +193,40 @@ def test_html_special_chars_are_escaped(subtitle_win):
     html = subtitle_win.label_original.text()
     assert "<span" in html
     assert "&lt;" in html, "< should be escaped as &lt; in HTML output"
+
+
+def test_typewriter_snaps_to_word_boundary(subtitle_win):
+    """After ticks, current text ends on a complete word, not mid-word."""
+    import config
+
+    config.TYPEWRITER_WORD_SNAP = True
+    subtitle_win._target_orig = "Hello beautiful world"
+    subtitle_win._curr_orig_text = ""
+    for _ in range(5):
+        subtitle_win._on_typewriter_tick()
+    result = subtitle_win._curr_orig_text
+    if result and result != "Hello beautiful world":
+        words_typed = result.split()
+        full_words = "Hello beautiful world".split()
+        for i, w in enumerate(words_typed):
+            assert w == full_words[i], f"Word {i} should be complete: got '{w}'"
+
+
+def test_snap_to_word_boundary_static():
+    """_snap_to_word_boundary helper returns complete-word prefix including trailing space."""
+    from subtitle_window import SubtitleWindow
+
+    # Step of 8 from "" on "Hello beautiful world" covers "Hello be" -> snap to "Hello "
+    result = SubtitleWindow._snap_to_word_boundary("", "Hello beautiful world", 8)
+    assert result == "Hello ", f"Expected 'Hello ', got '{result!r}'"
+
+
+def test_typewriter_word_snap_disabled_allows_midword(subtitle_win):
+    """When TYPEWRITER_WORD_SNAP=False, tick advances by raw characters without error."""
+    import config
+
+    config.TYPEWRITER_WORD_SNAP = False
+    subtitle_win._target_orig = "Hello"
+    subtitle_win._curr_orig_text = ""
+    subtitle_win._on_typewriter_tick()
+    assert isinstance(subtitle_win._curr_orig_text, str)
