@@ -1,5 +1,6 @@
 def test_config_has_required_audio_settings():
     import config
+
     assert config.SAMPLE_RATE == 16000
     assert config.CHUNK_MS == 100
     assert config.CHANNELS == 1
@@ -7,6 +8,7 @@ def test_config_has_required_audio_settings():
 
 def test_config_has_required_gemini_settings():
     import config
+
     assert config.MODEL == "gemini-2.5-flash-native-audio-preview-12-2025"
     assert config.TRANSLATE_MODEL == "gemini-2.5-flash"
     assert config.API_VERSION == "v1alpha"
@@ -15,11 +17,13 @@ def test_config_has_required_gemini_settings():
 
 def test_config_has_stt_engine_settings():
     import config
+
     assert config.STT_ENGINE in ("azure", "gemini")
 
 
 def test_config_has_required_ui_settings():
     import config
+
     assert config.WINDOW_OPACITY == 1.0
     assert config.COLOR_TRANS == "#FFD700"
     assert config.COLOR_ORIGINAL == "#FFFFFF"
@@ -28,5 +32,23 @@ def test_config_has_required_ui_settings():
 
 def test_chunk_size_is_calculated_correctly():
     import config
+
     # 16000 samples/sec * 100ms / 1000 * 2 bytes/sample = 3200 bytes
     assert config.CHUNK_SIZE == 3200
+
+
+def test_config_has_audio_source_setting():
+    import config
+
+    assert config.AUDIO_SOURCE in ("mic", "system")
+
+
+def test_new_config_flags_have_correct_defaults():
+    import config
+
+    assert hasattr(config, "METRICS_ENABLED")
+    assert config.METRICS_ENABLED is False
+    assert hasattr(config, "QUALITY_MODE")
+    assert config.QUALITY_MODE in ("fast", "balanced", "accurate")
+    assert hasattr(config, "AUDIO_QUEUE_MAX_CHUNKS")
+    assert isinstance(config.AUDIO_QUEUE_MAX_CHUNKS, int)

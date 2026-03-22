@@ -12,6 +12,7 @@ Improvements over original:
   - _toggle_listening() helper
   - MAX_HISTORY reads from config
 """
+
 import sys
 import os
 import queue
@@ -23,12 +24,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src
 
 import config
 from logger import setup_logger, get_logger
+from metrics import PipelineMetrics
 
 setup_logger(debug=config.DEBUG_MODE)
 logger = get_logger("main")
 
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5.QtCore import QTimer, QObject, pyqtSignal
+from PyQt5.QtWidgets import QApplication, QMessageBox  # type: ignore[import-not-found]
+from PyQt5.QtCore import QTimer, QObject, pyqtSignal  # type: ignore[import-not-found]
 
 from audio_capture import AudioCapture
 from subtitle_window import SubtitleWindow
@@ -40,9 +42,10 @@ from settings_window import SettingsWindow
 
 class _Bridge(QObject):
     """Thread-safe signal bridge — lets background threads trigger Qt UI actions."""
+
     open_settings = pyqtSignal()
     show_subtitle = pyqtSignal()
-    show_error    = pyqtSignal(str)
+    show_error = pyqtSignal(str)
 
 
 class App:
@@ -57,7 +60,9 @@ class App:
 
         self._validate_api_key()
 
-        self._audio = AudioCapture(error_callback=self._on_audio_error)
+        self._audio = AudioCapture(
+            error_callback=self._on_audio_error, source_mode=config.AUDIO_SOURCE
+        )
         self._settings_window = None
         self._engine = self._create_engine()
         self._subtitle = SubtitleWindow()
@@ -84,6 +89,7 @@ class App:
         self._last_had_translation = False
         self._history: list = []
         self._listening = False
+        self._metrics = PipelineMetrics()
 
         self._register_hotkey()
 
@@ -127,7 +133,8 @@ class App:
     def _register_hotkey(self):
         """Register Ctrl+Shift+L as a global toggle hotkey (optional)."""
         try:
-            import keyboard
+            import keyboard  # type: ignore[import-not-found]
+
             keyboard.add_hotkey("ctrl+shift+l", self._toggle_listening)
             logger.info("Global hotkey registered: Ctrl+Shift+L (toggle listening)")
         except ImportError:
@@ -176,9 +183,20 @@ class App:
         if config.STT_ENGINE == "gemini" and not isinstance(self._engine, GeminiClient):
             self._engine = self._create_engine()
             logger.info("Switched to GEMINI STT")
-        elif config.STT_ENGINE != "gemini" and not isinstance(self._engine, AzureSpeechClient):
+        elif config.STT_ENGINE != "gemini" and not isinstance(
+            self._engine, AzureSpeechClient
+        ):
             self._engine = self._create_engine()
             logger.info("Switched to AZURE STT")
+
+        # Recreate AudioCapture if source mode changed (mode is fixed at init)
+        if self._audio._source_mode != config.AUDIO_SOURCE:
+            self._audio = AudioCapture(
+                error_callback=self._on_audio_error,
+                source_mode=config.AUDIO_SOURCE,
+            )
+            # Reconnect engine queue to new AudioCapture instance
+            self._engine.audio_queue = self._audio.audio_queue
 
         self._listening = True
         self._engine.start()
@@ -186,8 +204,9 @@ class App:
 
         self._tray.set_listening(True)
         self._subtitle.set_listening(True)
+        source_label = "🎙 Mic" if config.AUDIO_SOURCE == "mic" else "🔊 System"
         self._tray.notify(
-            f"🎙 Listening  — STT: {config.STT_ENGINE}  |  Trans: {config.TRANSLATE_ENGINE}  |  {config.LANG_PAIR.upper()}"
+            f"{source_label} — STT: {config.STT_ENGINE}  |  Trans: {config.TRANSLATE_ENGINE}  |  {config.LANG_PAIR.upper()}"
         )
 
     def _stop_listening(self):
@@ -234,8 +253,13 @@ class App:
         self._tray.notify(f"⚠  {message}")
 
     def _on_audio_error(self, message: str):
-        """Called from audio thread on microphone failure."""
-        self._bridge.show_error.emit(f"Microphone error: {message}")
+        """Called from audio thread on audio capture failure."""
+        label = (
+            "System audio error"
+            if config.AUDIO_SOURCE == "system"
+            else "Microphone error"
+        )
+        self._bridge.show_error.emit(f"{label}: {message}")
         self._stop_listening()
 
     def _quit(self):
@@ -260,12 +284,15 @@ class App:
         if latest is None:
             return
 
-        original       = latest.get("original", "")
-        translation    = latest.get("translation", "")
-        source_lang    = latest.get("source_lang", "en")
-        is_final       = latest.get("is_final", False)
+        if config.METRICS_ENABLED:
+            self._metrics.mark("poll_dequeue")
+
+        original = latest.get("original", "")
+        translation = latest.get("translation", "")
+        source_lang = latest.get("source_lang", "en")
+        is_final = latest.get("is_final", False)
         has_real_trans = translation and translation != "…"
-        now            = time.monotonic()
+        now = time.monotonic()
 
         if self._last_had_translation:
             elapsed = now - self._last_display_time
@@ -282,10 +309,10 @@ class App:
             self._history.append((original, translation))
             if len(self._history) > max_h:
                 self._history = self._history[-max_h:]
-            display_orig  = "\n".join(h[0] for h in self._history)
+            display_orig = "\n".join(h[0] for h in self._history)
             display_trans = "\n".join(h[1] for h in self._history)
         else:
-            display_orig  = "\n".join([h[0] for h in self._history] + [original])
+            display_orig = "\n".join([h[0] for h in self._history] + [original])
             display_trans = "\n".join([h[1] for h in self._history] + [translation])
 
         self._subtitle.update_text(display_orig, display_trans, source_lang)
