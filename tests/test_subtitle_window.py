@@ -122,3 +122,43 @@ def test_paintEvent_does_not_crash_with_separator_and_text(subtitle_win):
     subtitle_win.label_translation.setText("Xin chào")
     subtitle_win.repaint()
     assert subtitle_win.label_original.text() == "Hello"
+
+
+def test_translation_on_top_layout(qtbot):
+    """When TRANSLATION_ON_TOP=True, translation label appears before original in layout."""
+    import config
+
+    original_flag = config.TRANSLATION_ON_TOP
+    config.TRANSLATION_ON_TOP = True
+    try:
+        from subtitle_window import SubtitleWindow
+
+        w = SubtitleWindow()
+        qtbot.addWidget(w)
+        layout = w.layout()
+        orig_idx = layout.indexOf(w.label_original)
+        trans_idx = layout.indexOf(w.label_translation)
+        assert trans_idx < orig_idx, (
+            "Translation should be before original when TRANSLATION_ON_TOP=True"
+        )
+    finally:
+        config.TRANSLATION_ON_TOP = original_flag
+
+
+def test_translation_on_bottom_by_default(qtbot):
+    """Default layout: original on top, translation on bottom."""
+    import config
+
+    original_flag = config.TRANSLATION_ON_TOP
+    config.TRANSLATION_ON_TOP = False
+    try:
+        from subtitle_window import SubtitleWindow
+
+        w = SubtitleWindow()
+        qtbot.addWidget(w)
+        layout = w.layout()
+        orig_idx = layout.indexOf(w.label_original)
+        trans_idx = layout.indexOf(w.label_translation)
+        assert orig_idx < trans_idx, "Original should be before translation by default"
+    finally:
+        config.TRANSLATION_ON_TOP = original_flag

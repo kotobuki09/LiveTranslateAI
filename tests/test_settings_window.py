@@ -38,3 +38,8 @@ def test_quality_mode_combo_saves_to_config(settings_win, monkeypatch):
     assert settings_win._settings["QUALITY_MODE"] == "accurate"
     assert config.QUALITY_MODE == "accurate"
     config.QUALITY_MODE = original_mode
+
+
+def test_trans_top_check_exists_in_settings(settings_win):
+    """Settings window has a translation-on-top checkbox in the Display tab."""
+    assert hasattr(settings_win, "_trans_top_check"), "Missing _trans_top_check"

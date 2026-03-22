@@ -362,6 +362,12 @@ class SettingsWindow(QDialog):
         self.max_history_spin.setValue(config.MAX_HISTORY)
         form.addRow("History lines:", self.max_history_spin)
 
+        form.addRow(self._section("Readability"))
+
+        self._trans_top_check = QCheckBox("Show translation above original text")
+        self._trans_top_check.setChecked(config.TRANSLATION_ON_TOP)
+        form.addRow("", self._trans_top_check)
+
         form.addRow(self._section("Logging"))
         self.debug_check = QCheckBox("Enable debug logging (verbose)")
         self.debug_check.setChecked(bool(config.DEBUG_MODE))
@@ -481,6 +487,8 @@ class SettingsWindow(QDialog):
         s["MAX_HISTORY"] = self.max_history_spin.value()
         s["DEBUG_MODE"] = self.debug_check.isChecked()
         s["QUALITY_MODE"] = self._quality_combo.currentData()
+        s["TRANSLATION_ON_TOP"] = self._trans_top_check.isChecked()
+        config.TRANSLATION_ON_TOP = self._trans_top_check.isChecked()
 
         save_settings(s)
 

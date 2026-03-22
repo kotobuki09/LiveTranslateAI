@@ -116,9 +116,6 @@ class SubtitleWindow(QWidget):
             f"line-height: 140%; "
             f"background: transparent;"
         )
-        self._add_shadow(self.label_original)
-        layout.addWidget(self.label_original)
-
         # Translated text
         self.label_translation = QLabel("", self)
         self.label_translation.setWordWrap(True)
@@ -132,8 +129,17 @@ class SubtitleWindow(QWidget):
             f"line-height: 145%; "
             f"background: transparent;"
         )
-        self._add_shadow(self.label_translation)
-        layout.addWidget(self.label_translation, stretch=1)
+
+        if config.TRANSLATION_ON_TOP:
+            self._add_shadow(self.label_translation)
+            layout.addWidget(self.label_translation, stretch=1)
+            self._add_shadow(self.label_original)
+            layout.addWidget(self.label_original)
+        else:
+            self._add_shadow(self.label_original)
+            layout.addWidget(self.label_original)
+            self._add_shadow(self.label_translation)
+            layout.addWidget(self.label_translation, stretch=1)
 
     def _fit_text_to_label(self, label: QLabel, text: str) -> str:
         """Trim lines from the top until text fits within the label's current height."""

@@ -202,6 +202,7 @@ WINDOW_WIDTH_RATIO = 0.75
 MAX_HISTORY = int(_user_conf.get("MAX_HISTORY", 1))
 INTERIM_DIM_OPACITY = float(_user_conf.get("INTERIM_DIM_OPACITY", 0.6))
 SHOW_SEPARATOR = bool(_user_conf.get("SHOW_SEPARATOR", True))
+TRANSLATION_ON_TOP = bool(_user_conf.get("TRANSLATION_ON_TOP", False))
 
 # ── Debug ───────────────────────────────────────────────────────────────
 DEBUG_MODE = bool(
