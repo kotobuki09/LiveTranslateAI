@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, PropertyMock
 
 
 def test_tray_manager_creates_menu_items():
@@ -152,3 +152,22 @@ def test_tray_icon_reflects_reconnecting_state():
     )
     mgr.set_listening(False)
     assert mgr._is_listening is False
+
+
+def test_set_listening_survives_pystray_icon_update_error():
+    from tray import TrayManager
+
+    mgr = TrayManager(
+        on_start=lambda: None,
+        on_stop=lambda: None,
+        on_settings=lambda: None,
+        on_quit=lambda: None,
+    )
+    mock_icon = MagicMock()
+    type(mock_icon).icon = PropertyMock(side_effect=OSError("WinError 1402"))
+    mgr._icon = mock_icon
+    mgr._is_listening = False
+
+    mgr.set_listening(True)
+
+    assert mgr._is_listening is True

@@ -173,10 +173,15 @@ class TrayManager:
         """Update tray icon and state to reflect listening status."""
         self._is_listening = active
         if self._icon:
-            self._icon.icon = self._get_icon_image(active=active)
-            self._icon.title = (
-                "LiveTranslate — Listening…" if active else "LiveTranslate — Idle"
-            )
+            try:
+                self._icon.icon = self._get_icon_image(active=active)
+                self._icon.title = (
+                    "LiveTranslate — Listening…" if active else "LiveTranslate — Idle"
+                )
+            except Exception as exc:
+                from logger import get_logger
+
+                get_logger(__name__).warning(f"[TrayManager] Icon update failed: {exc}")
 
     # ── Internal callbacks ─────────────────────────────────────────────
 

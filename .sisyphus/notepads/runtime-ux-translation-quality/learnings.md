@@ -49,3 +49,10 @@
 - Replaced both hardcoded > 10 rewind checks in _on_typewriter_tick for original and translation streams with config.TYPEWRITER_REWIND_TOLERANCE.
 - Added subtitle rewind behavior tests for small and large upstream corrections plus config default test; verified red-to-green with targeted pytest runs before full suite.
 - Full verification: pytest -v now reports 64 passed.
+
+## [2026-03-22] Task 6
+- Added regression test `test_set_listening_survives_pystray_icon_update_error` in `tests/test_tray.py` using `PropertyMock(side_effect=OSError("WinError 1402"))` on tray icon assignment.
+- Verified red phase first: targeted pytest failed at `TrayManager.set_listening` when assigning `self._icon.icon`.
+- Hardened `TrayManager.set_listening` in `src/tray.py` with `try/except Exception` around icon/title UI updates, keeping `self._is_listening = active` before the guarded block.
+- Added lazy logging in except block via `from logger import get_logger` and warning message `[TrayManager] Icon update failed: {exc}` so pystray UI failures do not crash runtime state transitions.
+- Post-fix verification: targeted regression test passes and full suite `pytest -v` reports 65 passed.
