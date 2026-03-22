@@ -54,19 +54,17 @@ def test_new_config_flags_have_correct_defaults():
     assert isinstance(config.AUDIO_QUEUE_MAX_CHUNKS, int)
 
 
-def test_quality_mode_defaults_to_balanced():
+def test_quality_mode_defaults_to_balanced(monkeypatch):
     import importlib
     import config as config_module
     import json_config
 
-    original_load_settings = json_config.load_settings
-    json_config.load_settings = lambda: {}
-    try:
+    with monkeypatch.context() as patch:
+        patch.setattr(json_config, "load_settings", lambda: {})
         cfg = importlib.reload(config_module)
         assert cfg.QUALITY_MODE == "balanced"
-    finally:
-        json_config.load_settings = original_load_settings
-        importlib.reload(config_module)
+
+    importlib.reload(config_module)
 
 
 def test_quality_presets_have_correct_keys():
