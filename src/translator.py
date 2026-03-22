@@ -5,16 +5,38 @@ The old Translator class was unused (engines load translators directly),
 so it has been removed. Only detect_lang() is kept here as the single
 source of truth.
 """
+
 import re
 
-_VI_CHARS = set(
-    "àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừởữựỳýỷỹỵđ"
-)
+_VI_CHARS = set("àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừởữựỳýỷỹỵđ")
 
 # Small set of common Italian words to help heuristic detection
 _IT_WORDS = {
-    "il", "lo", "la", "i", "gli", "le", "di", "da", "in", "su", "per", "tra", "fra",
-    "un", "una", "uno", "che", "non", "si", "sono", "con", "ma", "come", "ciao", "grazie"
+    "il",
+    "lo",
+    "la",
+    "i",
+    "gli",
+    "le",
+    "di",
+    "da",
+    "in",
+    "su",
+    "per",
+    "tra",
+    "fra",
+    "un",
+    "una",
+    "uno",
+    "che",
+    "non",
+    "si",
+    "sono",
+    "con",
+    "ma",
+    "come",
+    "ciao",
+    "grazie",
 }
 
 # Unicode character-set patterns for reliable CJK detection
@@ -41,7 +63,10 @@ def detect_lang_for_pair(text: str, pair_key: str, azure_lang: str = "") -> str:
     Prefers Azure's reported language; falls back to heuristics.
     """
     import config
-    pair = config.SUPPORTED_LANG_PAIRS.get(pair_key, config.SUPPORTED_LANG_PAIRS["en-vi"])
+
+    pair = config.SUPPORTED_LANG_PAIRS.get(
+        pair_key, config.SUPPORTED_LANG_PAIRS["en-vi"]
+    )
     lang_map = pair["azure_speech_map"]  # e.g. {"en-US": "en", "vi-VN": "vi"}
 
     if azure_lang and azure_lang in lang_map:
@@ -71,3 +96,17 @@ def detect_lang_for_pair(text: str, pair_key: str, azure_lang: str = "") -> str:
 
     ascii_ratio = sum(1 for c in text if ord(c) < 128) / len(text)
     return pair["lang_a"] if ascii_ratio > 0.85 else pair["lang_b"]
+
+
+def detect_lang_for_pair_with_confidence(
+    text: str, pair_key: str, azure_lang: str = ""
+) -> tuple[str, str]:
+    """Returns (lang, confidence) where confidence ∈ 'high'|'medium'|'low'."""
+    lang = detect_lang_for_pair(text, pair_key, azure_lang)
+    if azure_lang:
+        confidence = "high"
+    elif len(text) < 8:
+        confidence = "low"
+    else:
+        confidence = "medium"
+    return lang, confidence
