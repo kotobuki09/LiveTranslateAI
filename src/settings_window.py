@@ -9,13 +9,23 @@ Tabs:
 All fields have show/hide toggle for API key fields.
 Save uses an inline status label (no popup).
 """
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
-    QTabWidget, QWidget,
-    QLineEdit, QPushButton, QLabel, QComboBox,
-    QSpinBox, QSlider, QCheckBox,
+
+from PyQt5.QtWidgets import (  # type: ignore[import-not-found]
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QFormLayout,
+    QTabWidget,
+    QWidget,
+    QLineEdit,
+    QPushButton,
+    QLabel,
+    QComboBox,
+    QSpinBox,
+    QSlider,
+    QCheckBox,
 )
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer  # type: ignore[import-not-found]
 
 import config
 from json_config import load_settings, save_settings
@@ -154,9 +164,9 @@ class SettingsWindow(QDialog):
 
         # ── Tabs ────────────────────────────────────────────────────
         self._tabs = QTabWidget()
-        self._tabs.addTab(self._build_stt_tab(),         "🎙  STT")
+        self._tabs.addTab(self._build_stt_tab(), "🎙  STT")
         self._tabs.addTab(self._build_translation_tab(), "🌐  Translation")
-        self._tabs.addTab(self._build_display_tab(),     "🎨  Display")
+        self._tabs.addTab(self._build_display_tab(), "🎨  Display")
         root.addWidget(self._tabs)
 
         # ── Status label ────────────────────────────────────────────
@@ -180,6 +190,7 @@ class SettingsWindow(QDialog):
 
     def _get_user_key(self, key_name: str) -> str:
         import os
+
         val = self._settings.get(key_name, "")
         if val and val == os.getenv(key_name, ""):
             return ""
@@ -199,7 +210,9 @@ class SettingsWindow(QDialog):
 
         form.addRow(self._section("Azure Speech (STT)"))
 
-        self.azure_speech_key, row = self._key_row("Using default public key (override here)")
+        self.azure_speech_key, row = self._key_row(
+            "Using default public key (override here)"
+        )
         self.azure_speech_key.setText(self._get_user_key("AZURE_SPEECH_KEY"))
         form.addRow("Speech Key:", row)
 
@@ -217,6 +230,16 @@ class SettingsWindow(QDialog):
         self.mic_combo = QComboBox()
         self._populate_mics()
         form.addRow("Input Device:", self.mic_combo)
+
+        form.addRow(self._section("Audio Source"))
+
+        self._audio_source_combo = QComboBox()
+        self._audio_source_combo.addItem("🎙 Microphone", "mic")
+        self._audio_source_combo.addItem("🔊 System Audio", "system")
+        cur_src_idx = self._audio_source_combo.findData(config.AUDIO_SOURCE)
+        if cur_src_idx >= 0:
+            self._audio_source_combo.setCurrentIndex(cur_src_idx)
+        form.addRow("Audio Source:", self._audio_source_combo)
 
         layout.addLayout(form)
         layout.addStretch()
@@ -257,7 +280,9 @@ class SettingsWindow(QDialog):
 
         form.addRow(self._section("Azure Translator (optional)"))
 
-        self.azure_trans_key, row = self._key_row("Using default public key (override here)")
+        self.azure_trans_key, row = self._key_row(
+            "Using default public key (override here)"
+        )
         self.azure_trans_key.setText(self._get_user_key("AZURE_TRANSLATOR_KEY"))
         form.addRow("Translator Key:", row)
 
@@ -314,6 +339,18 @@ class SettingsWindow(QDialog):
 
         form.addRow(self._section("Behaviour"))
 
+        self._quality_combo = QComboBox()
+        self._quality_combo.addItem("⚡ Fast (lower latency)", "fast")
+        self._quality_combo.addItem("⚖  Balanced (default)", "balanced")
+        self._quality_combo.addItem("🎯 Accurate (higher quality)", "accurate")
+        cur_quality_idx = self._quality_combo.findData(config.QUALITY_MODE)
+        if cur_quality_idx >= 0:
+            self._quality_combo.setCurrentIndex(cur_quality_idx)
+        form.addRow("Quality Mode:", self._quality_combo)
+        hint = QLabel("⟳ Takes effect on next Start")
+        hint.setObjectName("hint_lbl")
+        form.addRow("", hint)
+
         self.auto_clear_spin = QSpinBox()
         self.auto_clear_spin.setRange(3, 30)
         self.auto_clear_spin.setSuffix(" s")
@@ -363,6 +400,7 @@ class SettingsWindow(QDialog):
 
     def _populate_mics(self):
         from audio_capture import AudioCapture
+
         self.mic_combo.clear()
         self.mic_combo.addItem("System Default", -1)
         for dev in AudioCapture.list_input_devices():
@@ -387,11 +425,14 @@ class SettingsWindow(QDialog):
             self._set_status("⚠  Fill in Speech Key and Region first.", error=True)
             return
         try:
-            import azure.cognitiveservices.speech as sdk
+            import azure.cognitiveservices.speech as sdk  # type: ignore[import-not-found]
+
             sdk.SpeechConfig(subscription=key, region=region)
             self._set_status("✓  Azure Speech config looks valid!", ok=True)
         except ImportError:
-            self._set_status("⚠  azure-cognitiveservices-speech not installed.", error=True)
+            self._set_status(
+                "⚠  azure-cognitiveservices-speech not installed.", error=True
+            )
         except Exception as e:
             self._set_status(f"✗  {e}", error=True)
 
@@ -402,56 +443,80 @@ class SettingsWindow(QDialog):
 
         # STT
         speech_key = self.azure_speech_key.text().strip()
-        if speech_key: s["AZURE_SPEECH_KEY"] = speech_key
-        else: s.pop("AZURE_SPEECH_KEY", None)
+        if speech_key:
+            s["AZURE_SPEECH_KEY"] = speech_key
+        else:
+            s.pop("AZURE_SPEECH_KEY", None)
 
         s["AZURE_SPEECH_REGION"] = self.azure_speech_region.text().strip()
-        s["AUDIO_DEVICE_INDEX"]  = self.mic_combo.currentData()
+        s["AUDIO_DEVICE_INDEX"] = self.mic_combo.currentData()
+        s["AUDIO_SOURCE"] = self._audio_source_combo.currentData()
 
         # Session
         s["STT_ENGINE"] = self.stt_engine_combo.currentText()
-        s["LANG_PAIR"]  = self.lang_pair_combo.currentData()
+        s["LANG_PAIR"] = self.lang_pair_combo.currentData()
 
         # Translation
-        s["TRANSLATE_ENGINE"]       = self.trans_engine_combo.currentText()
-        
+        s["TRANSLATE_ENGINE"] = self.trans_engine_combo.currentText()
+
         trans_key = self.azure_trans_key.text().strip()
-        if trans_key: s["AZURE_TRANSLATOR_KEY"] = trans_key
-        else: s.pop("AZURE_TRANSLATOR_KEY", None)
-        
+        if trans_key:
+            s["AZURE_TRANSLATOR_KEY"] = trans_key
+        else:
+            s.pop("AZURE_TRANSLATOR_KEY", None)
+
         s["AZURE_TRANSLATOR_REGION"] = self.azure_trans_region.text().strip()
-        
+
         gemini_key = self.gemini_key.text().strip()
-        if gemini_key: s["GEMINI_API_KEY"] = gemini_key
-        else: s.pop("GEMINI_API_KEY", None)
+        if gemini_key:
+            s["GEMINI_API_KEY"] = gemini_key
+        else:
+            s.pop("GEMINI_API_KEY", None)
 
         # Display
-        s["WINDOW_OPACITY"]     = self.opacity_slider.value() / 100
+        s["WINDOW_OPACITY"] = self.opacity_slider.value() / 100
         s["FONT_SIZE_ORIGINAL"] = self.font_orig_spin.value()
-        s["FONT_SIZE_TRANS"]    = self.font_trans_spin.value()
-        s["AUTO_CLEAR_SEC"]     = self.auto_clear_spin.value()
-        s["MAX_HISTORY"]        = self.max_history_spin.value()
-        s["DEBUG_MODE"]         = self.debug_check.isChecked()
+        s["FONT_SIZE_TRANS"] = self.font_trans_spin.value()
+        s["AUTO_CLEAR_SEC"] = self.auto_clear_spin.value()
+        s["MAX_HISTORY"] = self.max_history_spin.value()
+        s["DEBUG_MODE"] = self.debug_check.isChecked()
+        s["QUALITY_MODE"] = self._quality_combo.currentData()
 
         save_settings(s)
 
         # Apply to running config immediately
         import os
-        config.AZURE_SPEECH_KEY       = s.get("AZURE_SPEECH_KEY", os.getenv("AZURE_SPEECH_KEY", config._DAS))
-        config.AZURE_SPEECH_REGION    = s.get("AZURE_SPEECH_REGION", os.getenv("AZURE_SPEECH_REGION", "southeastasia"))
-        config.AUDIO_DEVICE_INDEX     = s["AUDIO_DEVICE_INDEX"]
-        config.STT_ENGINE             = s["STT_ENGINE"]
-        config.LANG_PAIR              = s["LANG_PAIR"]
-        config.TRANSLATE_ENGINE       = s["TRANSLATE_ENGINE"]
-        config.AZURE_TRANSLATOR_KEY   = s.get("AZURE_TRANSLATOR_KEY", os.getenv("AZURE_TRANSLATOR_KEY", config._DAT))
-        config.AZURE_TRANSLATOR_REGION = s.get("AZURE_TRANSLATOR_REGION", os.getenv("AZURE_TRANSLATOR_REGION", "global"))
-        config.GEMINI_API_KEY         = s.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", config._DG))
-        config.WINDOW_OPACITY         = s["WINDOW_OPACITY"]
-        config.FONT_SIZE_ORIGINAL     = s["FONT_SIZE_ORIGINAL"]
-        config.FONT_SIZE_TRANS        = s["FONT_SIZE_TRANS"]
-        config.AUTO_CLEAR_SEC         = s["AUTO_CLEAR_SEC"]
-        config.MAX_HISTORY            = s["MAX_HISTORY"]
-        config.DEBUG_MODE             = s["DEBUG_MODE"]
 
-        self._set_status("\u2713  Settings saved!  (Stop → Start listening to apply engine/language changes.)", ok=True)
+        config.AZURE_SPEECH_KEY = s.get(
+            "AZURE_SPEECH_KEY", os.getenv("AZURE_SPEECH_KEY", config._DAS)
+        )
+        config.AZURE_SPEECH_REGION = s.get(
+            "AZURE_SPEECH_REGION", os.getenv("AZURE_SPEECH_REGION", "southeastasia")
+        )
+        config.AUDIO_DEVICE_INDEX = s["AUDIO_DEVICE_INDEX"]
+        config.AUDIO_SOURCE = s["AUDIO_SOURCE"]
+        config.STT_ENGINE = s["STT_ENGINE"]
+        config.LANG_PAIR = s["LANG_PAIR"]
+        config.TRANSLATE_ENGINE = s["TRANSLATE_ENGINE"]
+        config.AZURE_TRANSLATOR_KEY = s.get(
+            "AZURE_TRANSLATOR_KEY", os.getenv("AZURE_TRANSLATOR_KEY", config._DAT)
+        )
+        config.AZURE_TRANSLATOR_REGION = s.get(
+            "AZURE_TRANSLATOR_REGION", os.getenv("AZURE_TRANSLATOR_REGION", "global")
+        )
+        config.GEMINI_API_KEY = s.get(
+            "GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", config._DG)
+        )
+        config.WINDOW_OPACITY = s["WINDOW_OPACITY"]
+        config.FONT_SIZE_ORIGINAL = s["FONT_SIZE_ORIGINAL"]
+        config.FONT_SIZE_TRANS = s["FONT_SIZE_TRANS"]
+        config.AUTO_CLEAR_SEC = s["AUTO_CLEAR_SEC"]
+        config.MAX_HISTORY = s["MAX_HISTORY"]
+        config.DEBUG_MODE = s["DEBUG_MODE"]
+        config.QUALITY_MODE = s["QUALITY_MODE"]
+
+        self._set_status(
+            "\u2713  Settings saved!  (Stop → Start listening to apply engine/language changes.)",
+            ok=True,
+        )
         QTimer.singleShot(2000, self.accept)

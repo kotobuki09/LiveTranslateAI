@@ -27,3 +27,11 @@
 - Added smoke test `test_gemini_client_does_not_retranslate_every_single_interim_chunk` in `tests/test_integration_smoke.py` to lock debounce constant presence and floor.
 - TDD evidence: new smoke test failed first (missing constant), then passed after implementation.
 - Verification after final edits: `python -m pytest tests/ -v` reports 53 passed.
+
+## [2026-03-22] Chunk 2 Task 4
+- Added `QUALITY_PRESETS` and `get_quality_preset()` in `src/config.py` with `fast`, `balanced`, and `accurate` knobs for debounce, interim word threshold, and silence duration.
+- Added Display-tab quality selector (`_quality_combo`) in `src/settings_window.py` and persisted `QUALITY_MODE` in `_save()`, including immediate runtime update via `config.QUALITY_MODE`.
+- Wired quality preset reads into runtime clients: Gemini interim translation delay now uses `config.get_quality_preset()["interim_debounce_ms"]`; Azure interim push throttle now uses `config.get_quality_preset()["interim_word_threshold"]`.
+- Added tests in `tests/test_config.py` and `tests/test_settings_window.py` for preset shape, quality combo presence, and save-to-config behavior.
+- Test hardening: quality default test now isolates config-file overrides by reloading config with empty settings, and settings save test stubs `save_settings` to avoid mutating local config during test runs.
+- Verification after final edits: `python -m pytest tests/ -v` reports 57 passed.

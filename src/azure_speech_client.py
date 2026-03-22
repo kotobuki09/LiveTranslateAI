@@ -220,8 +220,9 @@ class AzureSpeechClient:
 
         # Only push if we've spoken 3+ new words since the last interim push
         word_count = len(text.split())
+        word_threshold = config.get_quality_preset()["interim_word_threshold"]
         if (
-            word_count >= self._last_interim_word_count + 3
+            word_count >= self._last_interim_word_count + word_threshold
             or not self._last_translation
         ):
             self._last_interim_word_count = word_count

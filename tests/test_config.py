@@ -52,3 +52,27 @@ def test_new_config_flags_have_correct_defaults():
     assert config.QUALITY_MODE in ("fast", "balanced", "accurate")
     assert hasattr(config, "AUDIO_QUEUE_MAX_CHUNKS")
     assert isinstance(config.AUDIO_QUEUE_MAX_CHUNKS, int)
+
+
+def test_quality_mode_defaults_to_balanced():
+    import importlib
+    import config as config_module
+    import json_config
+
+    original_load_settings = json_config.load_settings
+    json_config.load_settings = lambda: {}
+    try:
+        cfg = importlib.reload(config_module)
+        assert cfg.QUALITY_MODE == "balanced"
+    finally:
+        json_config.load_settings = original_load_settings
+        importlib.reload(config_module)
+
+
+def test_quality_presets_have_correct_keys():
+    import config
+
+    preset = config.get_quality_preset()
+    assert "interim_debounce_ms" in preset
+    assert "interim_word_threshold" in preset
+    assert "silence_ms" in preset

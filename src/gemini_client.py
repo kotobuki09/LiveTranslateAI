@@ -201,10 +201,13 @@ class GeminiClient:
                     if translate_task and not translate_task.done():
                         translate_task.cancel()
                     if current_text:
+                        import config as _cfg
+
                         translate_task = asyncio.create_task(
                             self._stream_translate(
                                 current_text,
-                                delay=INTERIM_TRANSLATE_DEBOUNCE_MS / 1000,
+                                delay=_cfg.get_quality_preset()["interim_debounce_ms"]
+                                / 1000,
                             )
                         )
 

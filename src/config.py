@@ -210,3 +210,21 @@ QUALITY_MODE = _user_conf.get("QUALITY_MODE", "balanced")
 if QUALITY_MODE not in ("fast", "balanced", "accurate"):
     QUALITY_MODE = "balanced"
 AUDIO_QUEUE_MAX_CHUNKS = int(_user_conf.get("AUDIO_QUEUE_MAX_CHUNKS", 50))
+
+QUALITY_PRESETS = {
+    "fast": {"interim_debounce_ms": 200, "interim_word_threshold": 2, "silence_ms": 80},
+    "balanced": {
+        "interim_debounce_ms": 500,
+        "interim_word_threshold": 3,
+        "silence_ms": 100,
+    },
+    "accurate": {
+        "interim_debounce_ms": 800,
+        "interim_word_threshold": 5,
+        "silence_ms": 150,
+    },
+}
+
+
+def get_quality_preset() -> dict:
+    return QUALITY_PRESETS.get(QUALITY_MODE, QUALITY_PRESETS["balanced"])
