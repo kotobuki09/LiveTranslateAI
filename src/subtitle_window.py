@@ -234,6 +234,19 @@ class SubtitleWindow(QWidget):
         painter.setPen(QPen(QColor(255, 255, 255, 22), 1.0))
         painter.drawPath(path)
 
+        # Thin separator between original and translation labels
+        if config.SHOW_SEPARATOR:
+            orig_lbl = self.label_original
+            trans_lbl = self.label_translation
+            if orig_lbl.text() and trans_lbl.text():
+                gap_top = orig_lbl.geometry().bottom()
+                gap_bot = trans_lbl.geometry().top()
+                sep_y = gap_top + (gap_bot - gap_top) // 2
+                left_pad = 40
+                right_pad = self.width() - 40
+                painter.setPen(QPen(QColor(255, 255, 255, 35), 1.0))
+                painter.drawLine(left_pad, sep_y, right_pad, sep_y)
+
         alpha = 255 if self._dot_visible else 70
         mode_colors = {
             "listening": QColor(0, 230, 120, alpha),

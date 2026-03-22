@@ -103,3 +103,22 @@ def test_final_text_restores_full_opacity(subtitle_win):
     trans_style = subtitle_win.label_translation.styleSheet()
     assert "rgba(240,240,255,230)" in orig_style, "Original should have full alpha"
     assert "color: #FFD700" in trans_style, "Translation should be full gold"
+
+
+def test_show_separator_config_default(subtitle_win):
+    """SHOW_SEPARATOR config flag defaults to True."""
+    import config
+
+    assert hasattr(config, "SHOW_SEPARATOR")
+    assert config.SHOW_SEPARATOR is True
+
+
+def test_paintEvent_does_not_crash_with_separator_and_text(subtitle_win):
+    """paintEvent runs without error when both labels have text and SHOW_SEPARATOR=True."""
+    import config
+
+    config.SHOW_SEPARATOR = True
+    subtitle_win.label_original.setText("Hello")
+    subtitle_win.label_translation.setText("Xin chào")
+    subtitle_win.repaint()
+    assert subtitle_win.label_original.text() == "Hello"

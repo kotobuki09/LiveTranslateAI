@@ -87,3 +87,10 @@ def test_interim_dim_opacity_default():
 
     assert hasattr(config, "INTERIM_DIM_OPACITY")
     assert 0.3 <= config.INTERIM_DIM_OPACITY <= 0.8
+
+
+def test_show_separator_default():
+    import config
+
+    assert hasattr(config, "SHOW_SEPARATOR")
+    assert config.SHOW_SEPARATOR is True
