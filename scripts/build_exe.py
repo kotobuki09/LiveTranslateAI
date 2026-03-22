@@ -42,6 +42,8 @@ def main():
         "--hidden-import=pystray._win32",
         "--hidden-import=keyboard",
         "--hidden-import=pyaudio",
+        "--hidden-import=pyaudiowpatch",
+        "--hidden-import=_portaudiowpatch",
         "--hidden-import=PIL",
         "--hidden-import=PIL._imagingtk",
         "--hidden-import=PIL._tkinter_finder",
@@ -67,6 +69,7 @@ def main():
         "--collect-all=azure.cognitiveservices.speech",
         "--collect-all=google.genai",
         "--collect-all=PyQt5",
+        "--collect-all=pyaudiowpatch",
 
         # ── Suppress console on Windows (belt-and-suspenders) ─────────
         "--noconsole",

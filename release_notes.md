@@ -1,3 +1,17 @@
+# 🚀 LiveTranslate v1.5.1 — Fix System Audio (PyAudioWPatch bundled)
+
+This release fixes a bug where the installed `.exe` crashed with "PyAudioWPatch is not installed" when using System Audio mode. The PyAudioWPatch library and its C extension (`_portaudiowpatch`) are now correctly bundled by PyInstaller.
+
+## ✨ What's New in v1.5.1
+
+### Bug Fix: System Audio not working in installed EXE
+
+- **Problem**: Selecting System Audio as the input source showed the error: *"System audio error: PyAudioWPatch is not installed"* — even though the app worked fine when run from source.
+- **Cause**: The PyInstaller build script was missing `pyaudiowpatch` and its C extension `_portaudiowpatch` from the hidden imports and collect-all list, so they were never bundled into the `.exe`.
+- **Fix**: Added `--hidden-import=pyaudiowpatch`, `--hidden-import=_portaudiowpatch`, and `--collect-all=pyaudiowpatch` to the build configuration.
+
+---
+
 # 🚀 LiveTranslate v1.5.0 — Stability & Thread-Safety Release
 
 This release resolves a critical crash that occurred when starting or stopping listening, and cleans up all Qt cross-thread violations introduced by background audio and tray threads.
