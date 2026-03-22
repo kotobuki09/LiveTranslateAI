@@ -18,7 +18,7 @@
 </div>
 <br>
 
-**LiveTranslate** is a low-latency, real-time speech translation subtitle overlay for Windows. It captures your microphone audio, transcribes it using state-of-the-art AI, and provides instant translation in a sleek, semi-transparent floating window.
+**LiveTranslate** is a low-latency, real-time speech translation subtitle overlay for Windows. It captures audio from your **microphone or system speakers**, transcribes it using state-of-the-art AI, and provides instant translation in a sleek, semi-transparent floating window.
 
 ---
 
@@ -41,14 +41,18 @@
 
 ## ✨ Key Features
 
--   **🚀 Near-Instant Translation**: Leverages **Google Gemini 2.0 Flash** or **Azure Speech Services** for real-time performance.
+-   **🚀 Near-Instant Translation**: Leverages **Google Gemini 2.5 Flash** or **Azure Speech Services** for real-time performance.
+-   **🎙️ Dual Audio Source**:
+    -   **Microphone mode** (default): Captures your voice via any input device.
+    -   **System Audio mode**: Captures all desktop/speaker output via WASAPI loopback — perfect for translating videos, calls, or games without a headset.
 -   **🖥️ Non-Intrusive UI**:
     -   Semi-transparent overlay stays on top of meetings, videos, or games.
     -   Fully draggable and resizable (via settings).
     -   Interactive toggle: Double-click to instantly hide/show text.
+    -   Status badge in the subtitle bar shows the active audio source (🎙 or 🔊).
 -   **⌨️ Global Hotkey**: `Ctrl+Shift+L` to toggle listening from any application.
 -   **📥 Tray-Based**: Operates entirely from the system tray for a clean, taskbar-free workspace.
--   **🎨 Customizable**: Change font size, colors, and window opacity to match your preference.
+-   **🎨 Customizable**: Change font size, colors, window opacity, and quality mode to match your preference.
 
 ---
 
@@ -58,22 +62,26 @@ LiveTranslate uses a modular pipeline to ensure the lowest possible latency betw
 
 ```mermaid
 graph LR
-    A[🎤 Mic Input] --> B[🔉 Audio Capture]
-    B --> C{AI Engine}
-    C -->|Gemini Live| D[✨ Real-time STT + Trans]
-    C -->|Azure Speech| E[🎙️ Azure STT]
-    E --> F[🌐 Azure Translator]
+    A1[🎙 Microphone] -->|mic mode| B
+    A2[🔊 System Speakers] -->|system mode - WASAPI loopback| B
+    B[🔉 AudioCapture\n16kHz PCM queue] --> C{STT Engine}
+    C -->|Gemini Live| D[✨ Gemini 2.5 Flash\nNative Audio - STT + Trans]
+    C -->|Azure Speech| E[🎙️ Azure STT\nContinuous Recognition]
+    E --> F[🌐 Azure Translator\nor Gemini Translate]
     D --> G[🖥️ Subtitle Overlay]
     F --> G
-    G --> H[🎞️ Floating Window]
+    G --> H[🎞️ Floating Window\nstay-on-top]
 ```
 
 ### The Pipeline:
-1.  **Capture**: `PyAudio` captures raw 16kHz audio in 100ms chunks.
-2.  **Processing**: 
-    - **Google Gemini**: Uses the Gemini 2.0 Flash Live API (WebSocket) for simultaneous transcription and translation (lowest latency).
-    - **Azure**: Uses Azure Cognitive Services for high-fidelity speech-to-text followed by neural translation.
-3.  **Display**: A custom `PyQt5` window renders text with semi-transparency and "stay-on-top" priority.
+1.  **Capture** (`audio_capture.py`): `PyAudioWPatch` captures raw 16kHz PCM in 100ms chunks using one of two modes:
+    -   **`mic`** (default): Reads from a selected microphone input device.
+    -   **`system`**: Opens a WASAPI loopback on the default output device, then downmixes to mono and resamples to 16kHz — capturing everything playing through your speakers.
+    -   A drop-oldest bounded queue (`AUDIO_QUEUE_MAX_CHUNKS = 50`) prevents memory growth under load.
+2.  **STT & Translation**:
+    -   **Google Gemini** (`gemini_client.py`): Streams audio chunks over WebSocket to the Gemini 2.5 Flash Native Audio Live API for simultaneous real-time transcription and translation (lowest latency, ~200ms).
+    -   **Azure** (`azure_speech_client.py` + `azure_translator.py`): Feeds audio to Azure Cognitive Services for continuous speech-to-text, then calls Azure Translator (or Gemini Translate) for high-fidelity neural translation.
+3.  **Display** (`subtitle_window.py`): A custom `PyQt5` frameless window renders translated text with semi-transparency and "stay-on-top" priority. The status badge (🎙 / 🔊) reflects the active audio source.
 
 ---
 
@@ -120,14 +128,26 @@ We provide two ways to run the application for Windows:
 LiveTranslate is designed for **personal use**, meaning you use your own AI provider keys. This ensures your data remains under your control and you only pay for what you use (often within free tiers!).
 
 ### 🔑 Personal API Keys
-Right-click the tray icon -> **Settings** to configure:
+Right-click the tray icon → **Settings** to configure. The Settings window has three tabs:
 
-*   **Google Gemini** (Recommended for lowest latency):
-    *   Get a free key at [Google AI Studio](https://aistudio.google.com/).
-    *   Uses the `Gemini 2.0 Flash` model for real-time speech-to-speech.
-*   **Azure Cognitive Services**:
-    *   Get keys at the [Azure Portal](https://portal.azure.com/).
-    *   Requires **Speech Service** (for STT) and **Translator Service** (for translation).
+#### STT Tab
+-   **Azure Speech key / region** — required when using the Azure STT engine.
+-   **Audio Source**: Choose between:
+    -   🎙 **Microphone** — captures your voice (default).
+    -   🔊 **System Audio** — captures all desktop audio via WASAPI loopback (requires `PyAudioWPatch`).
+-   **Microphone device** — pick a specific input device or leave on *System Default*.
+-   **Connection Test** button to verify your Azure Speech credentials.
+
+#### Translation Tab
+-   **STT Engine**: `Azure Speech` or `Gemini Live`.
+-   **Translation Engine**: `Azure Translator` or `Gemini`.
+-   **Google Gemini API key** — get a free key at [Google AI Studio](https://aistudio.google.com/). Uses `Gemini 2.5 Flash Native Audio` for live STT and `Gemini 2.5 Flash` for translation.
+-   **Azure Translator key / region** — get keys at the [Azure Portal](https://portal.azure.com/).
+
+#### Display Tab
+-   Opacity, font sizes, auto-clear delay, max history lines.
+-   **Quality Mode** (see table below).
+-   **Debug Mode** toggle.
 
 > [!NOTE]
 > Your keys are stored **locally** in `config.json`. They are never uploaded or shared.
@@ -165,14 +185,37 @@ You can switch between these presets instantly via the **Settings** window.
 
 ---
 
+## 🏗️ Project Structure
+
+```
+src/
+├── audio_capture.py      # Dual-mode audio: mic (PyAudio) + system (WASAPI loopback)
+├── app_state.py          # AppState enum: IDLE / STARTING / LISTENING / RECONNECTING / ERROR
+├── azure_speech_client.py# Azure Cognitive Services continuous Speech-to-Text
+├── azure_translator.py   # Azure Translator neural translation
+├── config.py             # All runtime settings, quality presets, language pairs
+├── gemini_client.py      # Gemini Live API WebSocket client (native audio STT + translate)
+├── gemini_translator.py  # Gemini text-only translation fallback
+├── json_config.py        # Persistent config read/write (config.json / %APPDATA%)
+├── logger.py             # Structured logging setup
+├── metrics.py            # PipelineMetrics latency tracking
+├── settings_window.py    # Dark-themed tabbed QDialog (STT / Translation / Display)
+├── subtitle_window.py    # Frameless transparent stay-on-top subtitle overlay
+├── translator.py         # Lang-pair detection helpers
+└── tray.py               # System tray icon, menu, and engine switching logic
+```
+
+---
+
 ## 🧪 Technology Stack
 
 -   **Frontend**: `PyQt5` for the high-performance transparent overlay and system tray management.
--   **Audio**: `PyAudio` for low-level microphone stream handling.
+-   **Audio**: `PyAudioWPatch` — a Windows-specific fork of PyAudio that adds WASAPI loopback support for capturing system audio. Falls back to standard `PyAudio` for mic-only mode if WPatch is unavailable.
 -   **AI Engines**:
-    -   `google-genai`: WebSocket-based interaction with the Gemini Live API.
-    -   `azure-cognitiveservices-speech`: Official SDK for Azure Speech-to-Text.
--   **Utilities**: `pystray` (tray icon), `keyboard` (global hotkeys), `python-dotenv` (config).
+    -   `google-genai`: WebSocket-based interaction with the **Gemini 2.5 Flash Native Audio** Live API for real-time STT and the **Gemini 2.5 Flash** model for text translation.
+    -   `azure-cognitiveservices-speech`: Official SDK for Azure Continuous Speech-to-Text.
+    -   Azure Translator REST API for neural translation.
+-   **Utilities**: `pystray` (tray icon), `keyboard` (global hotkeys), `python-dotenv` (config), `Pillow` (tray icon rendering).
 
 ---
 
