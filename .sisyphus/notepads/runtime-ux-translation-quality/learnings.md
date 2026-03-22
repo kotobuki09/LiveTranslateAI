@@ -35,3 +35,11 @@
 - Added tests in `tests/test_config.py` and `tests/test_settings_window.py` for preset shape, quality combo presence, and save-to-config behavior.
 - Test hardening: quality default test now isolates config-file overrides by reloading config with empty settings, and settings save test stubs `save_settings` to avoid mutating local config during test runs.
 - Verification after final edits: `python -m pytest tests/ -v` reports 57 passed.
+
+## [2026-03-22] Task 5a
+- Added `SubtitleWindow._status_mode` defaulting to `"idle"`, plus `set_status_mode(mode: str)` that synchronizes `_status_mode` + `_is_listening` and triggers repaint.
+- Kept `SubtitleWindow.set_listening(bool)` as a compatibility shim by routing to `set_status_mode("listening" if active else "idle")`.
+- Updated `SubtitleWindow.paintEvent` indicator rendering to map status mode to dot color: listening/green, reconnecting/amber, error/red, starting/blue, idle/grey (only when subtitle text is empty).
+- Introduced AppState-driven UI binding in `main.py` via `_set_state(AppState)`, so subtitle mode and tray listening state are updated from one source for start/stop/error/reconnect transitions.
+- Added tests: three `set_status_mode` assertions in `tests/test_subtitle_window.py` and reconnecting-state tray assertion in `tests/test_tray.py`; ran red-first targeted selection before implementation.
+- Verification after final edits: `pytest -v` reports 61 passed.

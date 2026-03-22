@@ -35,6 +35,7 @@ from PyQt5.QtCore import QTimer, QObject, pyqtSignal  # type: ignore[import-not-
 from audio_capture import AudioCapture
 from subtitle_window import SubtitleWindow
 from tray import TrayManager
+from app_state import AppState
 from gemini_client import GeminiClient
 from azure_speech_client import AzureSpeechClient
 from settings_window import SettingsWindow
@@ -89,7 +90,10 @@ class App:
         self._last_had_translation = False
         self._history: list = []
         self._listening = False
+        self._state = AppState.IDLE
         self._metrics = PipelineMetrics()
+
+        self._set_state(AppState.IDLE)
 
         self._register_hotkey()
 
@@ -170,13 +174,28 @@ class App:
         else:
             self._start_listening()
 
+    def _set_state(self, state: AppState):
+        self._state = state
+        mode_map = {
+            AppState.IDLE: "idle",
+            AppState.STARTING: "starting",
+            AppState.LISTENING: "listening",
+            AppState.RECONNECTING: "reconnecting",
+            AppState.ERROR: "error",
+        }
+        self._subtitle.set_status_mode(mode_map[state])
+        self._tray.set_listening(state == AppState.LISTENING)
+
     def _start_listening(self):
         if self._listening:
             return
 
+        self._set_state(AppState.STARTING)
+
         if not self._check_internet():
             self._tray.notify("⚠  No internet connection — translation unavailable.")
             self._subtitle.show_error("No internet connection")
+            self._set_state(AppState.ERROR)
             return
 
         # Hot-swap engine if config changed
@@ -211,12 +230,11 @@ class App:
         if not self._audio.is_running:
             self._engine.stop()
             self._bridge.show_error.emit("Audio failed to start.")
+            self._set_state(AppState.ERROR)
             return
 
         self._listening = True
-
-        self._tray.set_listening(True)
-        self._subtitle.set_listening(True)
+        self._set_state(AppState.LISTENING)
         source_label = "🎙 Mic" if config.AUDIO_SOURCE == "mic" else "🔊 System"
         self._tray.notify(
             f"{source_label} — STT: {config.STT_ENGINE}  |  Trans: {config.TRANSLATE_ENGINE}  |  {config.LANG_PAIR.upper()}"
@@ -235,9 +253,8 @@ class App:
             except Exception:
                 break
         self._subtitle.clear()
-        self._subtitle.set_listening(False)
+        self._set_state(AppState.IDLE)
         self._history.clear()
-        self._tray.set_listening(False)
         self._tray.notify("⏹  Listening stopped.")
 
     def _open_settings(self):
@@ -262,6 +279,10 @@ class App:
         self._subtitle.raise_()
 
     def _show_error_on_main_thread(self, message: str):
+        if "reconnect" in message.lower():
+            self._set_state(AppState.RECONNECTING)
+        else:
+            self._set_state(AppState.ERROR)
         self._subtitle.show_error(message)
         self._tray.notify(f"⚠  {message}")
 

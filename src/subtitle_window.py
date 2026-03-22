@@ -11,9 +11,34 @@ Visual improvements over original:
   - adjustSize() only called when text actually changes
   - set_listening() called by App on start/stop
 """
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QApplication, QMenu, QGraphicsDropShadowEffect, QSizeGrip
-from PyQt5.QtCore import Qt, QPoint, QRectF, QPropertyAnimation, QEasingCurve, QTimer, pyqtSlot
-from PyQt5.QtGui import QColor, QPainter, QPainterPath, QLinearGradient, QPen, QFontMetrics, QFont
+
+from PyQt5.QtWidgets import (  # type: ignore[import-not-found]
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QApplication,
+    QMenu,
+    QGraphicsDropShadowEffect,
+    QSizeGrip,
+)
+from PyQt5.QtCore import (  # type: ignore[import-not-found]
+    Qt,
+    QPoint,
+    QRectF,
+    QPropertyAnimation,
+    QEasingCurve,
+    QTimer,
+    pyqtSlot,
+)
+from PyQt5.QtGui import (  # type: ignore[import-not-found]
+    QColor,
+    QPainter,
+    QPainterPath,
+    QLinearGradient,
+    QPen,
+    QFontMetrics,
+    QFont,
+)
 
 import config
 
@@ -25,6 +50,7 @@ class SubtitleWindow(QWidget):
         super().__init__()
         self._drag_pos = QPoint()
         self._is_listening = False
+        self._status_mode = "idle"
         self._dot_visible = True
         self._is_error = False
         self._last_original = ""
@@ -41,17 +67,14 @@ class SubtitleWindow(QWidget):
     # ── Initialisation ────────────────────────────────────────────────
 
     def _init_window(self):
-        self.setWindowFlags(
-            Qt.FramelessWindowHint
-            | Qt.WindowStaysOnTopHint
-            | Qt.Tool
-        )
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowOpacity(config.WINDOW_OPACITY)
 
     def _init_ui(self):
         # Load size or use default
         from json_config import load_settings
+
         s = load_settings()
         screen = QApplication.primaryScreen().availableGeometry()
         def_w = int(screen.width() * 0.95)
@@ -59,13 +82,15 @@ class SubtitleWindow(QWidget):
         h = s.get("SUBTITLE_HEIGHT", 400)
         self.resize(w, h)
         self.setMinimumSize(300, 100)
-        
+
         self.sizegrip = QSizeGrip(self)
-        self.sizegrip.setStyleSheet("QSizeGrip { width: 20px; height: 20px; background: transparent; }")
+        self.sizegrip.setStyleSheet(
+            "QSizeGrip { width: 20px; height: 20px; background: transparent; }"
+        )
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(40, 20, 40, 25) # Luxury padding for readability
-        layout.setSpacing(15) # Clear breathing room between languages
+        layout.setContentsMargins(40, 20, 40, 25)  # Luxury padding for readability
+        layout.setSpacing(15)  # Clear breathing room between languages
         # Let the layout stretch items fully, don't set fixed layout alignment
         # This fixes the text getting crushed to the left and wrapping too early
 
@@ -81,7 +106,7 @@ class SubtitleWindow(QWidget):
         # Original speech text
         self.label_original = QLabel("", self)
         self.label_original.setWordWrap(True)
-        self.label_original.setAlignment(Qt.AlignLeft) # Normal left-aligned text
+        self.label_original.setAlignment(Qt.AlignLeft)  # Normal left-aligned text
         self.label_original.setStyleSheet(
             f"color: rgba(240,240,255,230); "
             f"font-family: 'Calibri', 'Segoe UI', sans-serif; "
@@ -97,7 +122,7 @@ class SubtitleWindow(QWidget):
         # Translated text
         self.label_translation = QLabel("", self)
         self.label_translation.setWordWrap(True)
-        self.label_translation.setAlignment(Qt.AlignLeft) # Normal left-aligned text
+        self.label_translation.setAlignment(Qt.AlignLeft)  # Normal left-aligned text
         self.label_translation.setStyleSheet(
             f"color: #FFD700; "
             f"font-family: 'Calibri', 'Segoe UI', sans-serif; "
@@ -122,18 +147,18 @@ class SubtitleWindow(QWidget):
         usable_lines = max(1, available_h // line_h)
         # Calculate chars per line based on label width
         chars_per_line = max(1, label.width() // max(1, fm.averageCharWidth()))
-        
+
         # Split into visual lines (accounting for word wrap)
-        paragraphs = text.split('\n')
+        paragraphs = text.split("\n")
         all_lines = []
         for para in paragraphs:
             if not para:
-                all_lines.append('')
+                all_lines.append("")
                 continue
             words = para.split()
-            curr_line = ''
+            curr_line = ""
             for word in words:
-                test = (curr_line + ' ' + word).strip()
+                test = (curr_line + " " + word).strip()
                 if fm.horizontalAdvance(test) <= label.width() - 10:
                     curr_line = test
                 else:
@@ -142,11 +167,10 @@ class SubtitleWindow(QWidget):
                     curr_line = word
             if curr_line:
                 all_lines.append(curr_line)
-        
+
         # Keep only the last N lines that fit
         visible = all_lines[-usable_lines:]
-        return ' '.join(visible).strip()
-        
+        return " ".join(visible).strip()
 
     def _add_shadow(self, label: QLabel):
         shadow = QGraphicsDropShadowEffect(self)
@@ -158,7 +182,7 @@ class SubtitleWindow(QWidget):
     def _init_animations(self):
         # Premium fade-in/out animation (0 ↔ WINDOW_OPACITY)
         self._fade_anim = QPropertyAnimation(self, b"windowOpacity")
-        self._fade_anim.setDuration(400) # Slower, smoother transitions
+        self._fade_anim.setDuration(400)  # Slower, smoother transitions
         self._fade_anim.setEasingCurve(QEasingCurve.OutCubic)
 
         # Smooth character-by-character typewriter
@@ -167,7 +191,7 @@ class SubtitleWindow(QWidget):
         self._curr_orig_text = ""
         self._curr_trans_text = ""
         self._typewriter_timer = QTimer(self)
-        self._typewriter_timer.setInterval(20) 
+        self._typewriter_timer.setInterval(20)
         self._typewriter_timer.timeout.connect(self._on_typewriter_tick)
         self._typewriter_timer.start()
 
@@ -178,6 +202,7 @@ class SubtitleWindow(QWidget):
 
     def _position_bottom_center(self):
         from json_config import load_settings
+
         s = load_settings()
         saved_x = s.get("SUBTITLE_X")
         saved_y = s.get("SUBTITLE_Y")
@@ -209,14 +234,23 @@ class SubtitleWindow(QWidget):
         painter.setPen(QPen(QColor(255, 255, 255, 22), 1.0))
         painter.drawPath(path)
 
-        # Listening indicator dot (top-right corner)
-        if self._is_listening:
-            alpha = 255 if self._dot_visible else 70
-            dot_color = QColor(0, 230, 120, alpha)
+        alpha = 255 if self._dot_visible else 70
+        mode_colors = {
+            "listening": QColor(0, 230, 120, alpha),
+            "reconnecting": QColor(255, 165, 0, alpha),
+            "error": QColor(220, 50, 50, alpha),
+            "starting": QColor(60, 120, 255, alpha),
+        }
+        dot_color = mode_colors.get(self._status_mode)
+        if dot_color is not None:
             painter.setBrush(dot_color)
             painter.setPen(Qt.NoPen)
             painter.drawEllipse(self.width() - 25, 15, 10, 10)
-        elif not self.label_original.text() and not self.label_translation.text():
+        elif (
+            self._status_mode == "idle"
+            and not self.label_original.text()
+            and not self.label_translation.text()
+        ):
             # Idle dot — grey
             painter.setBrush(QColor(120, 120, 130, 100))
             painter.setPen(Qt.NoPen)
@@ -240,7 +274,9 @@ class SubtitleWindow(QWidget):
             self._fade_anim.stop()
         self._fade_anim.setStartValue(self.windowOpacity())
         self._fade_anim.setEndValue(0.0)
-        self._fade_anim.finished.connect(lambda: self.hide() if self.windowOpacity() == 0 else None)
+        self._fade_anim.finished.connect(
+            lambda: self.hide() if self.windowOpacity() == 0 else None
+        )
         self._fade_anim.start()
 
     def _on_typewriter_tick(self):
@@ -249,6 +285,7 @@ class SubtitleWindow(QWidget):
             return
 
         import os
+
         changed = False
 
         # Original catch-up
@@ -261,11 +298,11 @@ class SubtitleWindow(QWidget):
                 self.label_original.setText(self._curr_orig_text)
                 changed = True
             # else: silently wait for the streamed text to grow past what we've typed
-        
+
         if len(self._curr_orig_text) < len(self._target_orig):
             diff = len(self._target_orig) - len(self._curr_orig_text)
             step = max(1, diff // 8)
-            self._curr_orig_text = self._target_orig[:len(self._curr_orig_text) + step]
+            self._curr_orig_text = self._target_orig[: len(self._curr_orig_text) + step]
             fitted = self._fit_text_to_label(self.label_original, self._curr_orig_text)
             self.label_original.setText(fitted)
             changed = True
@@ -273,20 +310,28 @@ class SubtitleWindow(QWidget):
         # Translation catch-up
         if not self._target_trans.startswith(self._curr_trans_text):
             if len(self._curr_trans_text) - len(self._target_trans) > 10:
-                common = os.path.commonprefix([self._curr_trans_text, self._target_trans])
+                common = os.path.commonprefix(
+                    [self._curr_trans_text, self._target_trans]
+                )
                 self._curr_trans_text = common
-                fitted = self._fit_text_to_label(self.label_translation, self._curr_trans_text)
+                fitted = self._fit_text_to_label(
+                    self.label_translation, self._curr_trans_text
+                )
                 self.label_translation.setText(fitted)
                 changed = True
-        
+
         if len(self._curr_trans_text) < len(self._target_trans):
             diff = len(self._target_trans) - len(self._curr_trans_text)
             step = max(1, diff // 8)
-            self._curr_trans_text = self._target_trans[:len(self._curr_trans_text) + step]
-            fitted = self._fit_text_to_label(self.label_translation, self._curr_trans_text)
+            self._curr_trans_text = self._target_trans[
+                : len(self._curr_trans_text) + step
+            ]
+            fitted = self._fit_text_to_label(
+                self.label_translation, self._curr_trans_text
+            )
             self.label_translation.setText(fitted)
             changed = True
-        
+
         if changed:
             self.update()
 
@@ -302,18 +347,22 @@ class SubtitleWindow(QWidget):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        if hasattr(self, 'sizegrip'):
-            self.sizegrip.move(self.width() - self.sizegrip.width() - 5, self.height() - self.sizegrip.height() - 5)
-        if hasattr(self, '_save_timer'):
+        if hasattr(self, "sizegrip"):
+            self.sizegrip.move(
+                self.width() - self.sizegrip.width() - 5,
+                self.height() - self.sizegrip.height() - 5,
+            )
+        if hasattr(self, "_save_timer"):
             self._save_timer.start()
 
     def moveEvent(self, event):
         super().moveEvent(event)
-        if hasattr(self, '_save_timer'):
+        if hasattr(self, "_save_timer"):
             self._save_timer.start()
 
     def _save_geometry(self):
         from json_config import load_settings, save_settings
+
         s = load_settings()
         s["SUBTITLE_WIDTH"] = self.width()
         s["SUBTITLE_HEIGHT"] = self.height()
@@ -340,8 +389,9 @@ class SubtitleWindow(QWidget):
 
     def _set_opacity(self, value: float):
         self.setWindowOpacity(value)
-        config.WINDOW_OPACITY = value
+        config.WINDOW_OPACITY = float(value)
         from json_config import load_settings, save_settings
+
         s = load_settings()
         s["WINDOW_OPACITY"] = value
         save_settings(s)
@@ -369,7 +419,11 @@ class SubtitleWindow(QWidget):
 
     def set_listening(self, active: bool):
         """Called by App on start/stop listening."""
-        self._is_listening = active
+        self.set_status_mode("listening" if active else "idle")
+
+    def set_status_mode(self, mode: str):
+        self._status_mode = mode
+        self._is_listening = mode == "listening"
         self.update()
 
     @pyqtSlot(str, str, str)
@@ -397,12 +451,20 @@ class SubtitleWindow(QWidget):
         if "\n" in original and self._curr_orig_text:
             lines = original.split("\n")
             already = "\n".join(lines[:-1])  # all but last sentence
-            if already and original.startswith(already) and len(already) > len(self._curr_orig_text):
+            if (
+                already
+                and original.startswith(already)
+                and len(already) > len(self._curr_orig_text)
+            ):
                 self._curr_orig_text = already
         if "\n" in translation and self._curr_trans_text:
             lines = translation.split("\n")
             already = "\n".join(lines[:-1])
-            if already and translation.startswith(already) and len(already) > len(self._curr_trans_text):
+            if (
+                already
+                and translation.startswith(already)
+                and len(already) > len(self._curr_trans_text)
+            ):
                 self._curr_trans_text = already
 
         # Restore normal translation colour (may have been set to red by show_error)
@@ -414,10 +476,13 @@ class SubtitleWindow(QWidget):
             self._is_error = False
 
         # Language badge from active pair config
-        pair = config.SUPPORTED_LANG_PAIRS.get(config.LANG_PAIR,
-                                                config.SUPPORTED_LANG_PAIRS["en-vi"])
+        pair = config.SUPPORTED_LANG_PAIRS.get(
+            config.LANG_PAIR, config.SUPPORTED_LANG_PAIRS["en-vi"]
+        )
         badge_map = pair["badge"]
-        self.lang_badge.setText(badge_map.get(source_lang, pair["display"]))
+        source_icon = "🔊" if config.AUDIO_SOURCE == "system" else "🎙"
+        badge_text = badge_map.get(source_lang, pair["display"])
+        self.lang_badge.setText(f"{source_icon} {badge_text}")
 
         if was_empty and (original or translation):
             self.setWindowOpacity(0.0)
@@ -426,7 +491,6 @@ class SubtitleWindow(QWidget):
             self._fade_in()
         elif not self.isVisible():
             self.show()
-
 
     def show_error(self, message: str):
         """Display an error message in the subtitle area."""

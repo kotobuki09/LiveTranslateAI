@@ -1,21 +1,24 @@
-import pytest
+import pytest  # type: ignore[import-not-found]
 
 
 @pytest.fixture
 def subtitle_win(qtbot):
     from subtitle_window import SubtitleWindow
+
     win = SubtitleWindow()
     qtbot.addWidget(win)
     return win
 
 
 def test_subtitle_window_is_frameless(subtitle_win):
-    from PyQt5.QtCore import Qt
+    from PyQt5.QtCore import Qt  # type: ignore[import-not-found]
+
     assert subtitle_win.windowFlags() & Qt.FramelessWindowHint
 
 
 def test_subtitle_window_stays_on_top(subtitle_win):
-    from PyQt5.QtCore import Qt
+    from PyQt5.QtCore import Qt  # type: ignore[import-not-found]
+
     assert subtitle_win.windowFlags() & Qt.WindowStaysOnTopHint
 
 
@@ -47,3 +50,21 @@ def test_clear_clears_labels(subtitle_win, qtbot):
     assert subtitle_win.label_original.text() == ""
     assert subtitle_win.label_translation.text() == ""
     assert subtitle_win.lang_badge.text() == ""
+
+
+def test_set_status_mode_listening_shows_green_dot(subtitle_win):
+    subtitle_win.set_status_mode("listening")
+    assert subtitle_win._status_mode == "listening"
+    assert subtitle_win._is_listening is True
+
+
+def test_set_status_mode_error_shows_red_indicator(subtitle_win):
+    subtitle_win.set_status_mode("error")
+    assert subtitle_win._status_mode == "error"
+    assert subtitle_win._is_listening is False
+
+
+def test_set_status_mode_reconnecting_shows_amber_indicator(subtitle_win):
+    subtitle_win.set_status_mode("reconnecting")
+    assert subtitle_win._status_mode == "reconnecting"
+    assert subtitle_win._is_listening is False
