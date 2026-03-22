@@ -24,8 +24,15 @@
 
 ## 📺 Demo & Website
 
-### The Application Overlay
-![LiveTranslate Demo](docs/demo.png)
+### 🎬 Watch the Demo Video
+
+<div align="center">
+  <a href="https://youtu.be/kMhO4E2Rj5Y" target="_blank">
+    <img src="https://img.youtube.com/vi/kMhO4E2Rj5Y/maxresdefault.jpg" alt="Watch LiveTranslate Demo on YouTube" width="700" style="border-radius:8px;" />
+  </a>
+  <br><br>
+  <a href="https://youtu.be/kMhO4E2Rj5Y">▶️ Watch the Full Demo on YouTube</a>
+</div>
 
 ### The Official Website
 ![LiveTranslate Website](docs/website1.png)
