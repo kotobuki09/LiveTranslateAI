@@ -20,3 +20,10 @@
 - Added startup-failure guard: if audio does not report running before deadline, engine is stopped and `"Audio failed to start."` is emitted without entering listening state.
 - Added test coverage in `tests/test_main.py` for failed-start and delayed-success sequencing, and integration smoke assertion for required enum states.
 - Full suite verification after change: `python -m pytest tests/ -v` reports 49 passed.
+
+## [2026-03-22] Chunk 2 Task 3b
+- Added `INTERIM_TRANSLATE_DEBOUNCE_MS = 500` in `src/gemini_client.py` and replaced hardcoded interim translation delay with `INTERIM_TRANSLATE_DEBOUNCE_MS / 1000`.
+- Added low-confidence interim guard in `AzureSpeechClient._on_recognizing`: short ambiguous text (`len(text) < 8`) now skips interim push when confidence is low and there is no previous translation context.
+- Added smoke test `test_gemini_client_does_not_retranslate_every_single_interim_chunk` in `tests/test_integration_smoke.py` to lock debounce constant presence and floor.
+- TDD evidence: new smoke test failed first (missing constant), then passed after implementation.
+- Verification after final edits: `python -m pytest tests/ -v` reports 53 passed.

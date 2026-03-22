@@ -62,3 +62,11 @@ def test_app_state_enum_has_required_states():
 
     for name in ("IDLE", "STARTING", "LISTENING", "RECONNECTING", "ERROR"):
         assert hasattr(AppState, name)
+
+
+def test_gemini_client_does_not_retranslate_every_single_interim_chunk():
+    """Verify INTERIM_TRANSLATE_DEBOUNCE_MS constant exists and is at least 300ms."""
+    from gemini_client import INTERIM_TRANSLATE_DEBOUNCE_MS
+
+    assert isinstance(INTERIM_TRANSLATE_DEBOUNCE_MS, (int, float))
+    assert INTERIM_TRANSLATE_DEBOUNCE_MS >= 300

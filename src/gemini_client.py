@@ -11,6 +11,7 @@ Improvements:
   - on_failure callback
   - Exponential backoff capped at 8s
 """
+
 from logger import get_logger
 
 logger = get_logger(__name__)
@@ -24,10 +25,10 @@ import config
 from translator import detect_lang_for_pair
 
 try:
-    from google import genai
-    from google.genai import types as genai_types
+    from google import genai  # type: ignore[import-not-found]
+    from google.genai import types as genai_types  # type: ignore[import-not-found]
 except ImportError:
-    genai = None   # type: ignore
+    genai = None  # type: ignore
     genai_types = None  # type: ignore
 
 LIVE_SYSTEM_PROMPT = (
@@ -35,13 +36,15 @@ LIVE_SYSTEM_PROMPT = (
     "Do not speak or respond. Just listen to the audio."
 )
 
+INTERIM_TRANSLATE_DEBOUNCE_MS = 500
+
 
 class GeminiClient:
     def __init__(self, audio_queue: queue.Queue):
         self.audio_queue = audio_queue
         self.result_queue: queue.Queue[dict] = queue.Queue()
         self.is_running = False
-        self.on_failure = None    # type: ignore  # callable(str) | None
+        self.on_failure = None  # type: ignore  # callable(str) | None
         self.on_reconnect = None  # type: ignore  # callable(str) | None — transient errors
         self._thread: "threading.Thread | None" = None
         self._local_translator = None
@@ -59,14 +62,17 @@ class GeminiClient:
         # Eagerly load translator
         if config.TRANSLATE_ENGINE == "azure" and config.AZURE_TRANSLATOR_KEY:
             from azure_translator import get_azure_translator
+
             self._local_translator = get_azure_translator()
             logger.info("[GeminiClient] Using Azure Translator")
         elif config.TRANSLATE_ENGINE == "gemini" and config.GEMINI_API_KEY:
             from gemini_translator import get_gemini_translator
+
             self._local_translator = get_gemini_translator()
             logger.info("[GeminiClient] Using Gemini Translator")
         else:
             from azure_translator import get_azure_translator
+
             self._local_translator = get_azure_translator()
             logger.info("[GeminiClient] Using Azure Translator (default)")
 
@@ -129,7 +135,9 @@ class GeminiClient:
         )
 
         logger.info(f"[GeminiClient] Connecting to {config.MODEL}…")
-        async with self._client.aio.live.connect(model=config.MODEL, config=live_config) as session:
+        async with self._client.aio.live.connect(
+            model=config.MODEL, config=live_config
+        ) as session:
             logger.info("[GeminiClient] Connected.")
             send_task = asyncio.create_task(self._send_audio(session))
             recv_task = asyncio.create_task(self._receive_responses(session))
@@ -180,20 +188,30 @@ class GeminiClient:
                         continue
                     self._pending_original += chunk_text
                     current_text = self._pending_original.strip()
-                    self.result_queue.put({
-                        "original": current_text,
-                        "translation": self._last_translation or "…",
-                        "source_lang": detect_lang_for_pair(current_text, config.LANG_PAIR),
-                        "is_final": False,
-                    })
+                    self.result_queue.put(
+                        {
+                            "original": current_text,
+                            "translation": self._last_translation or "…",
+                            "source_lang": detect_lang_for_pair(
+                                current_text, config.LANG_PAIR
+                            ),
+                            "is_final": False,
+                        }
+                    )
                     if translate_task and not translate_task.done():
                         translate_task.cancel()
                     if current_text:
                         translate_task = asyncio.create_task(
-                            self._stream_translate(current_text, delay=1.0)
+                            self._stream_translate(
+                                current_text,
+                                delay=INTERIM_TRANSLATE_DEBOUNCE_MS / 1000,
+                            )
                         )
 
-                if getattr(sc, "turn_complete", None) and self._pending_original.strip():
+                if (
+                    getattr(sc, "turn_complete", None)
+                    and self._pending_original.strip()
+                ):
                     if translate_task and not translate_task.done():
                         translate_task.cancel()
                         try:
@@ -211,7 +229,9 @@ class GeminiClient:
 
         logger.info("[GeminiClient] receive loop ended.")
 
-    async def _stream_translate(self, text: str, delay: float = 0.0, is_final: bool = False):
+    async def _stream_translate(
+        self, text: str, delay: float = 0.0, is_final: bool = False
+    ):
         if delay > 0:
             await asyncio.sleep(delay)
         try:
@@ -219,12 +239,14 @@ class GeminiClient:
             lang = detect_lang_for_pair(text, config.LANG_PAIR)
             translated = self._local_translator.translate(text, lang)
             self._last_translation = translated
-            self.result_queue.put({
-                "original": original,
-                "translation": translated,
-                "source_lang": lang,
-                "is_final": is_final,
-            })
+            self.result_queue.put(
+                {
+                    "original": original,
+                    "translation": translated,
+                    "source_lang": lang,
+                    "is_final": is_final,
+                }
+            )
         except asyncio.CancelledError:
             raise
         except Exception as e:

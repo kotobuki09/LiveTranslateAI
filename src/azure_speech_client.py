@@ -13,6 +13,7 @@ Improvements over original:
   - Dynamic language pair from config.LANG_PAIR
   - on_failure callback when recognition is permanently canceled
 """
+
 from logger import get_logger
 
 logger = get_logger(__name__)
@@ -23,7 +24,7 @@ import config
 from translator import detect_lang_for_pair
 
 try:
-    import azure.cognitiveservices.speech as speechsdk
+    import azure.cognitiveservices.speech as speechsdk  # type: ignore[import-not-found]
 except ImportError:
     speechsdk = None  # reported at start()
 
@@ -102,17 +103,20 @@ class AzureSpeechClient:
         """Pre-load fallback translator on start so mid-speech fallback is instant."""
         if config.TRANSLATE_ENGINE == "gemini" and config.GEMINI_API_KEY:
             from gemini_translator import get_gemini_translator
+
             self._translator = get_gemini_translator()
             logger.info("[AzureSpeech] Fallback translator: Gemini")
         else:
             from azure_translator import get_azure_translator
+
             self._translator = get_azure_translator()
             logger.info("[AzureSpeech] Fallback translator: Azure")
 
     def _build_recognizer(self):
         """Create SpeechTranslationConfig + PushAudioInputStream + TranslationRecognizer."""
-        pair = config.SUPPORTED_LANG_PAIRS.get(config.LANG_PAIR,
-                                                config.SUPPORTED_LANG_PAIRS["en-vi"])
+        pair = config.SUPPORTED_LANG_PAIRS.get(
+            config.LANG_PAIR, config.SUPPORTED_LANG_PAIRS["en-vi"]
+        )
 
         translation_config = speechsdk.translation.SpeechTranslationConfig(
             subscription=config.AZURE_SPEECH_KEY,
@@ -134,7 +138,9 @@ class AzureSpeechClient:
             bits_per_sample=16,
             channels=1,
         )
-        self._push_stream = speechsdk.audio.PushAudioInputStream(stream_format=audio_format)
+        self._push_stream = speechsdk.audio.PushAudioInputStream(
+            stream_format=audio_format
+        )
         audio_config = speechsdk.audio.AudioConfig(stream=self._push_stream)
 
         self._recognizer = speechsdk.translation.TranslationRecognizer(
@@ -178,8 +184,9 @@ class AzureSpeechClient:
         except Exception:
             azure_lang = ""
 
-        pair = config.SUPPORTED_LANG_PAIRS.get(config.LANG_PAIR,
-                                                config.SUPPORTED_LANG_PAIRS["en-vi"])
+        pair = config.SUPPORTED_LANG_PAIRS.get(
+            config.LANG_PAIR, config.SUPPORTED_LANG_PAIRS["en-vi"]
+        )
         source_lang = detect_lang_for_pair(text, config.LANG_PAIR, azure_lang)
 
         # Azure Speech translation target is the opposite language in the pair
@@ -197,6 +204,12 @@ class AzureSpeechClient:
         if not text:
             return
 
+        from translator import detect_lang_for_pair_with_confidence
+
+        _, confidence = detect_lang_for_pair_with_confidence(text, config.LANG_PAIR)
+        if len(text) < 8 and confidence == "low" and not self._last_translation:
+            return
+
         source_lang, target_lang = self._resolve_lang(result, text)
         translation = self._get_speech_translation(result, target_lang)
 
@@ -207,14 +220,19 @@ class AzureSpeechClient:
 
         # Only push if we've spoken 3+ new words since the last interim push
         word_count = len(text.split())
-        if word_count >= self._last_interim_word_count + 3 or not self._last_translation:
+        if (
+            word_count >= self._last_interim_word_count + 3
+            or not self._last_translation
+        ):
             self._last_interim_word_count = word_count
-            self.result_queue.put({
-                "original": text,
-                "translation": self._last_translation or "…",
-                "source_lang": source_lang,
-                "is_final": False,
-            })
+            self.result_queue.put(
+                {
+                    "original": text,
+                    "translation": self._last_translation or "…",
+                    "source_lang": source_lang,
+                    "is_final": False,
+                }
+            )
 
     def _on_recognized(self, evt):
         """Final utterance callback."""
@@ -231,7 +249,9 @@ class AzureSpeechClient:
             if not translation and self._translator:
                 try:
                     translation = self._translator.translate(text, source_lang)
-                    logger.info(f"[AzureSpeech] Used fallback translator for: {text[:40]}")
+                    logger.info(
+                        f"[AzureSpeech] Used fallback translator for: {text[:40]}"
+                    )
                 except Exception as e:
                     logger.error(f"[AzureSpeech] Fallback translation error: {e}")
                     translation = "…"
@@ -241,13 +261,17 @@ class AzureSpeechClient:
                 self._last_translation = translation or "…"
                 self._last_interim_word_count = 0  # Reset on final utterance
 
-            logger.info(f"[AzureSpeech] Final [{source_lang}]: {text[:60]} → {translation[:60] if translation else '?'}")
-            self.result_queue.put({
-                "original": text,
-                "translation": translation or "…",
-                "source_lang": source_lang,
-                "is_final": True,
-            })
+            logger.info(
+                f"[AzureSpeech] Final [{source_lang}]: {text[:60]} → {translation[:60] if translation else '?'}"
+            )
+            self.result_queue.put(
+                {
+                    "original": text,
+                    "translation": translation or "…",
+                    "source_lang": source_lang,
+                    "is_final": True,
+                }
+            )
 
         elif result.reason == speechsdk.ResultReason.NoMatch:
             pass  # Silence / unrecognizable audio
