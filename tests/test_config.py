@@ -108,3 +108,10 @@ def test_typewriter_word_snap_default():
 
     assert hasattr(config, "TYPEWRITER_WORD_SNAP")
     assert config.TYPEWRITER_WORD_SNAP is True
+
+
+def test_show_processing_indicator_default():
+    import config
+
+    assert hasattr(config, "SHOW_PROCESSING_INDICATOR")
+    assert config.SHOW_PROCESSING_INDICATOR is True

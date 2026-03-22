@@ -507,6 +507,20 @@ class SubtitleWindow(QWidget):
     def set_status_mode(self, mode: str):
         self._status_mode = mode
         self._is_listening = mode == "listening"
+        if (
+            config.SHOW_PROCESSING_INDICATOR
+            and mode == "listening"
+            and not self._target_orig
+            and not self._target_trans
+            and not self._curr_orig_text
+            and not self._curr_trans_text
+        ):
+            self.label_translation.setStyleSheet(
+                f"color: rgba(255,215,0,100); "
+                f"font-family: 'Calibri', 'Segoe UI', sans-serif; "
+                f"font-size: {config.FONT_SIZE_TRANS}pt; font-weight: 700; background: transparent;"
+            )
+            self.label_translation.setText("\u2026")
         self.update()
 
     def _apply_interim_style(self, is_final: bool):
@@ -538,6 +552,9 @@ class SubtitleWindow(QWidget):
         self, original: str, translation: str, source_lang: str, is_final: bool = True
     ):
         """Update both subtitle labels via typewriter targeting."""
+        # Clear processing indicator if present
+        if self.label_translation.text() == "\u2026":
+            self.label_translation.setText("")
         self._target_orig = original
         self._target_trans = translation
 

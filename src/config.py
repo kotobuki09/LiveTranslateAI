@@ -205,6 +205,7 @@ SHOW_SEPARATOR = bool(_user_conf.get("SHOW_SEPARATOR", True))
 TRANSLATION_ON_TOP = bool(_user_conf.get("TRANSLATION_ON_TOP", False))
 HISTORY_DIM_OPACITY = float(_user_conf.get("HISTORY_DIM_OPACITY", 0.45))
 TYPEWRITER_WORD_SNAP = bool(_user_conf.get("TYPEWRITER_WORD_SNAP", True))
+SHOW_PROCESSING_INDICATOR = bool(_user_conf.get("SHOW_PROCESSING_INDICATOR", True))
 
 # ── Debug ───────────────────────────────────────────────────────────────
 DEBUG_MODE = bool(

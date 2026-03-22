@@ -230,3 +230,52 @@ def test_typewriter_word_snap_disabled_allows_midword(subtitle_win):
     subtitle_win._curr_orig_text = ""
     subtitle_win._on_typewriter_tick()
     assert isinstance(subtitle_win._curr_orig_text, str)
+
+
+def test_processing_indicator_shows_when_listening_and_empty(subtitle_win):
+    """When listening and both labels are empty, translation label shows '\u2026' placeholder."""
+    import config
+
+    config.SHOW_PROCESSING_INDICATOR = True
+    subtitle_win.label_original.setText("")
+    subtitle_win.label_translation.setText("")
+    subtitle_win._target_orig = ""
+    subtitle_win._target_trans = ""
+    subtitle_win._curr_orig_text = ""
+    subtitle_win._curr_trans_text = ""
+    subtitle_win.set_status_mode("listening")
+    assert subtitle_win.label_translation.text() == "\u2026"
+
+
+def test_processing_indicator_clears_when_text_arrives(subtitle_win):
+    """Processing indicator disappears when update_text is called with real content."""
+    import config
+
+    config.SHOW_PROCESSING_INDICATOR = True
+    subtitle_win.label_translation.setText("")
+    subtitle_win._target_orig = ""
+    subtitle_win._target_trans = ""
+    subtitle_win._curr_orig_text = ""
+    subtitle_win._curr_trans_text = ""
+    subtitle_win.set_status_mode("listening")
+    assert subtitle_win.label_translation.text() == "\u2026"
+    subtitle_win.update_text("Hello", "Xin ch\u00e0o", "en", is_final=True)
+    assert subtitle_win.label_translation.text() != "\u2026"
+
+
+def test_processing_indicator_hidden_when_disabled(subtitle_win):
+    """When SHOW_PROCESSING_INDICATOR=False, no placeholder shown."""
+    import config
+
+    original = config.SHOW_PROCESSING_INDICATOR
+    config.SHOW_PROCESSING_INDICATOR = False
+    try:
+        subtitle_win.label_translation.setText("")
+        subtitle_win._target_orig = ""
+        subtitle_win._target_trans = ""
+        subtitle_win._curr_orig_text = ""
+        subtitle_win._curr_trans_text = ""
+        subtitle_win.set_status_mode("listening")
+        assert subtitle_win.label_translation.text() != "\u2026"
+    finally:
+        config.SHOW_PROCESSING_INDICATOR = original
