@@ -94,3 +94,10 @@ def test_show_separator_default():
 
     assert hasattr(config, "SHOW_SEPARATOR")
     assert config.SHOW_SEPARATOR is True
+
+
+def test_history_dim_opacity_default():
+    import config
+
+    assert hasattr(config, "HISTORY_DIM_OPACITY")
+    assert 0.2 <= config.HISTORY_DIM_OPACITY <= 0.8

@@ -162,3 +162,34 @@ def test_translation_on_bottom_by_default(qtbot):
         assert orig_idx < trans_idx, "Original should be before translation by default"
     finally:
         config.TRANSLATION_ON_TOP = original_flag
+
+
+def test_history_lines_rendered_dimmer_than_current(subtitle_win):
+    import config
+
+    config.HISTORY_DIM_OPACITY = 0.45
+    multi_line_orig = "Previous sentence.\nCurrent sentence."
+    multi_line_trans = "Câu trước.\nCâu hiện tại."
+    subtitle_win._curr_orig_text = multi_line_orig
+    subtitle_win._curr_trans_text = multi_line_trans
+    subtitle_win._render_labels_with_history()
+    orig_html = subtitle_win.label_original.text()
+    assert "<span" in orig_html, "Rich text spans expected for history dimming"
+    assert "rgba" in orig_html, "Dim color rgba expected in history span"
+
+
+def test_single_line_no_span_overhead(subtitle_win):
+    subtitle_win._curr_orig_text = "Hello"
+    subtitle_win._curr_trans_text = "Xin chào"
+    subtitle_win._render_labels_with_history()
+    orig_text = subtitle_win.label_original.text()
+    assert "<span" not in orig_text, "No span overhead for single-line text"
+
+
+def test_html_special_chars_are_escaped(subtitle_win):
+    subtitle_win._curr_orig_text = "A < B & C\nNormal line."
+    subtitle_win._curr_trans_text = "Line 2."
+    subtitle_win._render_labels_with_history()
+    html = subtitle_win.label_original.text()
+    assert "<span" in html
+    assert "&lt;" in html, "< should be escaped as &lt; in HTML output"

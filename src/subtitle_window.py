@@ -116,6 +116,7 @@ class SubtitleWindow(QWidget):
             f"line-height: 140%; "
             f"background: transparent;"
         )
+        self.label_original.setTextFormat(Qt.RichText)
         # Translated text
         self.label_translation = QLabel("", self)
         self.label_translation.setWordWrap(True)
@@ -129,6 +130,7 @@ class SubtitleWindow(QWidget):
             f"line-height: 145%; "
             f"background: transparent;"
         )
+        self.label_translation.setTextFormat(Qt.RichText)
 
         if config.TRANSLATION_ON_TOP:
             self._add_shadow(self.label_translation)
@@ -317,7 +319,6 @@ class SubtitleWindow(QWidget):
             ):
                 common = os.path.commonprefix([self._curr_orig_text, self._target_orig])
                 self._curr_orig_text = common
-                self.label_original.setText(self._curr_orig_text)
                 changed = True
             # else: silently wait for the streamed text to grow past what we've typed
 
@@ -325,8 +326,6 @@ class SubtitleWindow(QWidget):
             diff = len(self._target_orig) - len(self._curr_orig_text)
             step = max(1, diff // 8)
             self._curr_orig_text = self._target_orig[: len(self._curr_orig_text) + step]
-            fitted = self._fit_text_to_label(self.label_original, self._curr_orig_text)
-            self.label_original.setText(fitted)
             changed = True
 
         # Translation catch-up
@@ -339,10 +338,6 @@ class SubtitleWindow(QWidget):
                     [self._curr_trans_text, self._target_trans]
                 )
                 self._curr_trans_text = common
-                fitted = self._fit_text_to_label(
-                    self.label_translation, self._curr_trans_text
-                )
-                self.label_translation.setText(fitted)
                 changed = True
 
         if len(self._curr_trans_text) < len(self._target_trans):
@@ -351,14 +346,45 @@ class SubtitleWindow(QWidget):
             self._curr_trans_text = self._target_trans[
                 : len(self._curr_trans_text) + step
             ]
-            fitted = self._fit_text_to_label(
-                self.label_translation, self._curr_trans_text
-            )
-            self.label_translation.setText(fitted)
             changed = True
 
         if changed:
+            self._render_labels_with_history()
             self.update()
+
+    def _render_labels_with_history(self):
+        import html as _html
+
+        def build_html(text: str, full_color: str) -> str:
+            if "\n" not in text:
+                return _html.escape(text)
+            lines = text.split("\n")
+            dim_alpha = int(config.HISTORY_DIM_OPACITY * 255)
+            if full_color.startswith("rgba"):
+                parts = full_color.replace("rgba(", "").replace(")", "").split(",")
+                dim_color = f"rgba({parts[0].strip()},{parts[1].strip()},{parts[2].strip()},{dim_alpha})"
+            else:
+                hex_c = full_color.lstrip("#")
+                r, g, b = int(hex_c[0:2], 16), int(hex_c[2:4], 16), int(hex_c[4:6], 16)
+                dim_color = f"rgba({r},{g},{b},{dim_alpha})"
+
+            history_lines = lines[:-1]
+            current_line = lines[-1]
+            parts_html = []
+            for h in history_lines:
+                escaped = _html.escape(h)
+                parts_html.append(f'<span style="color:{dim_color}">{escaped}</span>')
+            parts_html.append(_html.escape(current_line))
+            return "<br>".join(parts_html)
+
+        orig_color = "rgba(240,240,255,230)"
+        trans_color = "#FFD700"
+
+        orig_html = build_html(self._curr_orig_text, orig_color)
+        trans_html = build_html(self._curr_trans_text, trans_color)
+
+        self.label_original.setText(orig_html)
+        self.label_translation.setText(trans_html)
 
     # ── Drag support ─────────────────────────────────────────────────
 
