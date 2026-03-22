@@ -368,6 +368,14 @@ class SettingsWindow(QDialog):
         self._trans_top_check.setChecked(config.TRANSLATION_ON_TOP)
         form.addRow("", self._trans_top_check)
 
+        self._show_separator_check = QCheckBox("Show separator line between original and translation")
+        self._show_separator_check.setChecked(config.SHOW_SEPARATOR)
+        form.addRow("", self._show_separator_check)
+
+        self._show_processing_check = QCheckBox("Show '\u2026' indicator while waiting for speech")
+        self._show_processing_check.setChecked(config.SHOW_PROCESSING_INDICATOR)
+        form.addRow("", self._show_processing_check)
+
         form.addRow(self._section("Logging"))
         self.debug_check = QCheckBox("Enable debug logging (verbose)")
         self.debug_check.setChecked(bool(config.DEBUG_MODE))
@@ -489,6 +497,12 @@ class SettingsWindow(QDialog):
         s["QUALITY_MODE"] = self._quality_combo.currentData()
         s["TRANSLATION_ON_TOP"] = self._trans_top_check.isChecked()
         config.TRANSLATION_ON_TOP = self._trans_top_check.isChecked()
+
+        s["SHOW_SEPARATOR"] = self._show_separator_check.isChecked()
+        config.SHOW_SEPARATOR = self._show_separator_check.isChecked()
+
+        s["SHOW_PROCESSING_INDICATOR"] = self._show_processing_check.isChecked()
+        config.SHOW_PROCESSING_INDICATOR = self._show_processing_check.isChecked()
 
         save_settings(s)
 
