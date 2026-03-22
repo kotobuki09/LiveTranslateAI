@@ -235,18 +235,17 @@
                             <i data-lucide="sparkles"></i>
                         </div>
                         <div class="feature-body">
-                            <h3>Gemini &amp; Azure AI</h3>
-                            <p>Choose between Google Gemini Flash or Azure AI — two leading models for maximum
-                                flexibility and accuracy.</p>
+                            <h3>Gemini 2.5 Flash &amp; Azure AI</h3>
+                            <p>Choose between <strong>Gemini 2.5 Flash Native Audio</strong> for ultra-low-latency live transcription, or Azure Cognitive Services for enterprise-grade accuracy.</p>
                         </div>
                     </div>
-                    <div class="feature-card glass fade-in-up" style="animation-delay:0.2s" id="feature-offline">
+                    <div class="feature-card glass fade-in-up" style="animation-delay:0.2s" id="feature-audio-source">
                         <div class="feature-icon">
-                            <i data-lucide="cloud-off"></i>
+                            <i data-lucide="volume-2"></i>
                         </div>
                         <div class="feature-body">
-                            <h3>Offline Mode <span class="coming-soon-tag">Soon</span></h3>
-                            <p>Download language models for on-the-go use without an internet connection.</p>
+                            <h3>Dual Audio Source</h3>
+                            <p>Capture from your <strong>microphone</strong> or <strong>system speakers</strong> (WASAPI loopback) — translate videos, meetings, or games without a headset.</p>
                         </div>
                     </div>
                     <div class="feature-card glass fade-in-up" style="animation-delay:0.25s" id="feature-integration">
@@ -264,9 +263,8 @@
                             <i data-lucide="sliders"></i>
                         </div>
                         <div class="feature-body">
-                            <h3>Customizable Overlay</h3>
-                            <p>Adjust font size, opacity, position, and color of subtitle overlays to fit your screen
-                                perfectly.</p>
+                            <h3>Quality Modes &amp; Customizable Overlay</h3>
+                            <p>Three quality presets — <strong>Fast</strong>, <strong>Balanced</strong>, <strong>Accurate</strong> — plus full control over font size, opacity, and subtitle position.</p>
                         </div>
                     </div>
                 </div>
@@ -303,7 +301,7 @@
                             <div class="step-number">2</div>
                         </div>
                         <h4>Configure Settings</h4>
-                        <p>Select your preferred language pairs and customize subtitle appearance and placement.</p>
+                        <p>Pick your AI engine, audio source (microphone or system audio), language pair, and quality mode via the tray icon → Settings.</p>
                     </div>
 
                     <div class="step-connector">
@@ -318,7 +316,7 @@
                             <div class="step-number">3</div>
                         </div>
                         <h4>Translate Instantly</h4>
-                        <p>Start any video, game, or stream, and LiveTranslate will automatically generate overlays.</p>
+                        <p>Hit <strong>Start Listening</strong> (or press <kbd>Ctrl+Shift+L</kbd>) and see live subtitles overlaid on any video, call, or game — under 1 second latency.</p>
                     </div>
                 </div>
             </div>
@@ -363,10 +361,7 @@
                             <i data-lucide="chevron-down" class="faq-chevron"></i>
                         </button>
                         <div class="faq-answer">
-                            <p>LiveTranslate supports <strong>Google Gemini Flash</strong> (fast and cost-effective) and
-                                <strong>Azure AI Translator</strong> (enterprise-grade accuracy). You can switch between
-                                them in settings and add your own API keys.
-                            </p>
+                            <p>LiveTranslate supports two engines: <strong>Google Gemini 2.5 Flash Native Audio</strong> — a real-time WebSocket live API that transcribes and translates simultaneously for the lowest possible latency — and <strong>Azure Cognitive Services</strong> with Azure Translator for enterprise-grade accuracy. You can switch engines and add your own API keys in Settings.</p>
                         </div>
                     </div>
 
@@ -388,9 +383,17 @@
                             <i data-lucide="chevron-down" class="faq-chevron"></i>
                         </button>
                         <div class="faq-answer">
-                            <p>With Google Gemini Flash, typical end-to-end latency is <strong>under 1 second</strong>
-                                on a standard broadband connection. Azure AI typically delivers results in 0.5–1.5
-                                seconds depending on region.</p>
+                            <p>With Gemini 2.5 Flash Native Audio, typical end-to-end latency is <strong>~200ms</strong> on a standard broadband connection. Azure AI typically delivers results in 0.5–1.5 seconds depending on region. Use the <strong>Fast</strong> quality preset for live conversations or the <strong>Accurate</strong> preset for lectures and slower speech.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" id="faq-6">
+                        <button class="faq-question" aria-expanded="false">
+                            <span>Can I translate audio from videos or meetings, not just my mic?</span>
+                            <i data-lucide="chevron-down" class="faq-chevron"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes. Switch <strong>Audio Source</strong> to <em>System Audio</em> in Settings → STT tab. LiveTranslate captures everything playing through your speakers via WASAPI loopback — no virtual audio cable needed. Requires Windows 10/11 and the bundled PyAudioWPatch driver.</p>
                         </div>
                     </div>
 
@@ -410,7 +413,7 @@
                         <i data-lucide="download"></i>
                         Download for Windows — It's Free
                     </a>
-                    <p class="cta-note">Windows 10/11 · Powered by Google Gemini &amp; Azure AI</p>
+                    <p class="cta-note">Windows 10/11 · Powered by Gemini 2.5 Flash &amp; Azure AI · Mic or System Audio</p>
                 </div>
             </div>
         </section>
