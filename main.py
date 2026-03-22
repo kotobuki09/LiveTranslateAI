@@ -47,6 +47,8 @@ class _Bridge(QObject):
     open_settings = pyqtSignal()
     show_subtitle = pyqtSignal()
     show_error = pyqtSignal(str)
+    start_listening = pyqtSignal()
+    stop_listening = pyqtSignal()
 
 
 class App:
@@ -58,6 +60,8 @@ class App:
         self._bridge.open_settings.connect(self._show_settings_on_main_thread)
         self._bridge.show_subtitle.connect(self._show_subtitle_on_main_thread)
         self._bridge.show_error.connect(self._show_error_on_main_thread)
+        self._bridge.start_listening.connect(self._start_listening)
+        self._bridge.stop_listening.connect(self._stop_listening)
 
         self._validate_api_key()
 
@@ -68,8 +72,8 @@ class App:
         self._engine = self._create_engine()
         self._subtitle = SubtitleWindow()
         self._tray = TrayManager(
-            on_start=self._start_listening,
-            on_stop=self._stop_listening,
+            on_start=self._bridge.start_listening.emit,
+            on_stop=self._bridge.stop_listening.emit,
             on_settings=self._open_settings,
             on_quit=self._quit,
             on_show_subtitle=self._open_show_subtitle,
@@ -170,9 +174,9 @@ class App:
 
     def _toggle_listening(self):
         if self._listening:
-            self._stop_listening()
+            self._bridge.stop_listening.emit()
         else:
-            self._start_listening()
+            self._bridge.start_listening.emit()
 
     def _set_state(self, state: AppState):
         self._state = state

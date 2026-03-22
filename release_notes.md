@@ -1,3 +1,21 @@
+# 🚀 LiveTranslate v1.5.0 — Stability & Thread-Safety Release
+
+This release resolves a critical crash that occurred when starting or stopping listening, and cleans up all Qt cross-thread violations introduced by background audio and tray threads.
+
+## ✨ What's New in v1.5.0
+
+### 🐛 Critical Bug Fixes
+* **Segfault on Start/Stop Fixed**: Resolved a `Segmentation fault` crash caused by `pystray` and the `keyboard` hotkey library invoking start/stop callbacks on background threads, which then directly manipulated `QLabel` and `QTextDocument` Qt widgets from the wrong thread.
+* **Qt Thread-Safety Enforced**: All UI-mutating paths now go through the existing `_Bridge` `QObject` signal relay. Two new signals — `start_listening` and `stop_listening` — are added so the Qt event loop dispatches those actions on the main thread.
+* **Hotkey Race Eliminated**: `Ctrl+Shift+L` global hotkey toggle now emits through the bridge instead of calling `_start_listening`/`_stop_listening` directly, removing the last remaining cross-thread widget access.
+
+### 🔧 Technical Details
+* `_Bridge` extended with `start_listening = pyqtSignal()` and `stop_listening = pyqtSignal()`.
+* `TrayManager` `on_start`/`on_stop` callbacks wired to `bridge.start_listening.emit` / `bridge.stop_listening.emit`.
+* `_toggle_listening()` routes through the bridge instead of calling methods directly.
+
+---
+
 # 🚀 LiveTranslate v1.4.0 — Quality & Visual Polish Release
 
 This release brings significant UX improvements, smarter translation quality controls, and a more polished subtitle display experience.
