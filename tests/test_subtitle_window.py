@@ -86,3 +86,20 @@ def test_typewriter_does_rewind_on_large_correction(subtitle_win, qtbot):
     qtbot.wait(60)
 
     assert subtitle_win._curr_orig_text == "Hello"
+
+
+def test_interim_text_reduces_label_opacity(subtitle_win):
+    subtitle_win.update_text("Hello", "Xin chào", "en", is_final=False)
+    orig_style = subtitle_win.label_original.styleSheet()
+    trans_style = subtitle_win.label_translation.styleSheet()
+    assert "rgba" in orig_style, "Original should use rgba for dimming"
+    assert "rgba" in trans_style, "Translation should use rgba for dimming"
+
+
+def test_final_text_restores_full_opacity(subtitle_win):
+    subtitle_win.update_text("Hello", "Xin chào", "en", is_final=False)
+    subtitle_win.update_text("Hello world", "Xin chào thế giới", "en", is_final=True)
+    orig_style = subtitle_win.label_original.styleSheet()
+    trans_style = subtitle_win.label_translation.styleSheet()
+    assert "rgba(240,240,255,230)" in orig_style, "Original should have full alpha"
+    assert "color: #FFD700" in trans_style, "Translation should be full gold"

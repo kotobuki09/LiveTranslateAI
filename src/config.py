@@ -200,6 +200,7 @@ AUTO_CLEAR_SEC = int(_user_conf.get("AUTO_CLEAR_SEC", 4))
 MIN_DISPLAY_SEC = 2
 WINDOW_WIDTH_RATIO = 0.75
 MAX_HISTORY = int(_user_conf.get("MAX_HISTORY", 1))
+INTERIM_DIM_OPACITY = float(_user_conf.get("INTERIM_DIM_OPACITY", 0.6))
 
 # ── Debug ───────────────────────────────────────────────────────────────
 DEBUG_MODE = bool(

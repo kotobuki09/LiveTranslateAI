@@ -80,3 +80,10 @@ def test_typewriter_rewind_tolerance_default():
     import config
 
     assert config.TYPEWRITER_REWIND_TOLERANCE == 10
+
+
+def test_interim_dim_opacity_default():
+    import config
+
+    assert hasattr(config, "INTERIM_DIM_OPACITY")
+    assert 0.3 <= config.INTERIM_DIM_OPACITY <= 0.8

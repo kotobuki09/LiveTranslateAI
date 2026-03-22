@@ -349,7 +349,7 @@ class App:
             display_orig = "\n".join([h[0] for h in self._history] + [original])
             display_trans = "\n".join([h[1] for h in self._history] + [translation])
 
-        self._subtitle.update_text(display_orig, display_trans, source_lang)
+        self._subtitle.update_text(display_orig, display_trans, source_lang, is_final)
         self._last_display_time = now
         self._last_had_translation = has_real_trans
 

@@ -432,8 +432,34 @@ class SubtitleWindow(QWidget):
         self._is_listening = mode == "listening"
         self.update()
 
-    @pyqtSlot(str, str, str)
-    def update_text(self, original: str, translation: str, source_lang: str):
+    def _apply_interim_style(self, is_final: bool):
+        if is_final:
+            orig_color = "rgba(240,240,255,230)"
+            trans_color = "#FFD700"
+        else:
+            dim = int(config.INTERIM_DIM_OPACITY * 255)
+            orig_color = f"rgba(240,240,255,{dim})"
+            trans_color = f"rgba(255,215,0,{dim})"
+
+        self.label_original.setStyleSheet(
+            f"color: {orig_color}; "
+            f"font-family: 'Calibri', 'Segoe UI', sans-serif; "
+            f"font-size: {config.FONT_SIZE_ORIGINAL}pt; "
+            f"font-weight: 600; letter-spacing: 0.3px; line-height: 140%; "
+            f"background: transparent;"
+        )
+        self.label_translation.setStyleSheet(
+            f"color: {trans_color}; "
+            f"font-family: 'Calibri', 'Segoe UI', sans-serif; "
+            f"font-size: {config.FONT_SIZE_TRANS}pt; "
+            f"font-weight: 700; letter-spacing: 0.4px; line-height: 145%; "
+            f"background: transparent;"
+        )
+
+    @pyqtSlot(str, str, str, bool)
+    def update_text(
+        self, original: str, translation: str, source_lang: str, is_final: bool = True
+    ):
         """Update both subtitle labels via typewriter targeting."""
         self._target_orig = original
         self._target_trans = translation
@@ -489,6 +515,8 @@ class SubtitleWindow(QWidget):
         source_icon = "🔊" if config.AUDIO_SOURCE == "system" else "🎙"
         badge_text = badge_map.get(source_lang, pair["display"])
         self.lang_badge.setText(f"{source_icon} {badge_text}")
+
+        self._apply_interim_style(is_final)
 
         if was_empty and (original or translation):
             self.setWindowOpacity(0.0)
