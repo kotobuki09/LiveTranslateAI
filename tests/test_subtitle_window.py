@@ -68,3 +68,21 @@ def test_set_status_mode_reconnecting_shows_amber_indicator(subtitle_win):
     subtitle_win.set_status_mode("reconnecting")
     assert subtitle_win._status_mode == "reconnecting"
     assert subtitle_win._is_listening is False
+
+
+def test_typewriter_does_not_rewind_on_small_correction(subtitle_win, qtbot):
+    subtitle_win._curr_orig_text = "Hello world this is"
+    subtitle_win._target_orig = "Hello world this"
+
+    qtbot.wait(60)
+
+    assert subtitle_win._curr_orig_text.startswith("Hello world this")
+
+
+def test_typewriter_does_rewind_on_large_correction(subtitle_win, qtbot):
+    subtitle_win._curr_orig_text = "Hello world this is a very long sentence"
+    subtitle_win._target_orig = "Hello"
+
+    qtbot.wait(60)
+
+    assert subtitle_win._curr_orig_text == "Hello"

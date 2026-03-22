@@ -291,8 +291,11 @@ class SubtitleWindow(QWidget):
         # Original catch-up
         if not self._target_orig.startswith(self._curr_orig_text):
             # Only rewind if the target shrank significantly (true correction/new sentence)
-            # Small Azure interim fluctuations (< 10 chars shorter) are absorbed going forward
-            if len(self._curr_orig_text) - len(self._target_orig) > 10:
+            # Small Azure interim fluctuations are absorbed going forward
+            if (
+                len(self._curr_orig_text) - len(self._target_orig)
+                > config.TYPEWRITER_REWIND_TOLERANCE
+            ):
                 common = os.path.commonprefix([self._curr_orig_text, self._target_orig])
                 self._curr_orig_text = common
                 self.label_original.setText(self._curr_orig_text)
@@ -309,7 +312,10 @@ class SubtitleWindow(QWidget):
 
         # Translation catch-up
         if not self._target_trans.startswith(self._curr_trans_text):
-            if len(self._curr_trans_text) - len(self._target_trans) > 10:
+            if (
+                len(self._curr_trans_text) - len(self._target_trans)
+                > config.TYPEWRITER_REWIND_TOLERANCE
+            ):
                 common = os.path.commonprefix(
                     [self._curr_trans_text, self._target_trans]
                 )

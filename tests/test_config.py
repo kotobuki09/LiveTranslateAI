@@ -74,3 +74,9 @@ def test_quality_presets_have_correct_keys():
     assert "interim_debounce_ms" in preset
     assert "interim_word_threshold" in preset
     assert "silence_ms" in preset
+
+
+def test_typewriter_rewind_tolerance_default():
+    import config
+
+    assert config.TYPEWRITER_REWIND_TOLERANCE == 10

@@ -43,3 +43,9 @@
 - Introduced AppState-driven UI binding in `main.py` via `_set_state(AppState)`, so subtitle mode and tray listening state are updated from one source for start/stop/error/reconnect transitions.
 - Added tests: three `set_status_mode` assertions in `tests/test_subtitle_window.py` and reconnecting-state tray assertion in `tests/test_tray.py`; ran red-first targeted selection before implementation.
 - Verification after final edits: `pytest -v` reports 61 passed.
+
+## [2026-03-22] Task 5b
+- Added TYPEWRITER_REWIND_TOLERANCE config flag with _user_conf.get("TYPEWRITER_REWIND_TOLERANCE", 10) to make rewind smoothing threshold configurable.
+- Replaced both hardcoded > 10 rewind checks in _on_typewriter_tick for original and translation streams with config.TYPEWRITER_REWIND_TOLERANCE.
+- Added subtitle rewind behavior tests for small and large upstream corrections plus config default test; verified red-to-green with targeted pytest runs before full suite.
+- Full verification: pytest -v now reports 64 passed.

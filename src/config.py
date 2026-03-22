@@ -210,6 +210,7 @@ QUALITY_MODE = _user_conf.get("QUALITY_MODE", "balanced")
 if QUALITY_MODE not in ("fast", "balanced", "accurate"):
     QUALITY_MODE = "balanced"
 AUDIO_QUEUE_MAX_CHUNKS = int(_user_conf.get("AUDIO_QUEUE_MAX_CHUNKS", 50))
+TYPEWRITER_REWIND_TOLERANCE = int(_user_conf.get("TYPEWRITER_REWIND_TOLERANCE", 10))
 
 QUALITY_PRESETS = {
     "fast": {"interim_debounce_ms": 200, "interim_word_threshold": 2, "silence_ms": 80},
