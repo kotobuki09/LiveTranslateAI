@@ -55,3 +55,10 @@ def test_subtitle_window_full_lifecycle(qtbot):
     assert win.label_original.text() == ""
     assert win.label_translation.text() == ""
     assert win.lang_badge.text() == ""
+
+
+def test_app_state_enum_has_required_states():
+    from app_state import AppState
+
+    for name in ("IDLE", "STARTING", "LISTENING", "RECONNECTING", "ERROR"):
+        assert hasattr(AppState, name)

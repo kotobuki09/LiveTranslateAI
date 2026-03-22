@@ -198,9 +198,22 @@ class App:
             # Reconnect engine queue to new AudioCapture instance
             self._engine.audio_queue = self._audio.audio_queue
 
-        self._listening = True
+        self._listening = False
         self._engine.start()
         threading.Thread(target=self._audio.start, daemon=True).start()
+
+        deadline = time.monotonic() + 0.8
+        while time.monotonic() < deadline:
+            if self._audio.is_running:
+                break
+            time.sleep(0.05)
+
+        if not self._audio.is_running:
+            self._engine.stop()
+            self._bridge.show_error.emit("Audio failed to start.")
+            return
+
+        self._listening = True
 
         self._tray.set_listening(True)
         self._subtitle.set_listening(True)
