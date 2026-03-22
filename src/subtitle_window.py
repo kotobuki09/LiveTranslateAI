@@ -303,14 +303,21 @@ class SubtitleWindow(QWidget):
     @staticmethod
     def _snap_to_word_boundary(current: str, target: str, step: int) -> str:
         new_end = len(current) + step
-        candidate = target[:new_end]
         if new_end >= len(target):
             return target
+        candidate = target[:new_end]
         search_region = candidate[len(current) :]
         last_space_in_region = search_region.rfind(" ")
         if last_space_in_region >= 0:
             snap_pos = len(current) + last_space_in_region + 1
             return target[:snap_pos]
+        # No space in step window — if at a word boundary, jump ahead to next complete word
+        if not current or current[-1] == " ":
+            next_space = target.find(" ", len(current))
+            if next_space >= 0:
+                return target[: next_space + 1]
+            return target
+        # Mid-word fallback: advance by raw chars so long words still progress
         return candidate
 
     def _on_typewriter_tick(self):
