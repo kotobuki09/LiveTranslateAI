@@ -139,6 +139,21 @@ LiveTranslate supports several bi-directional language presets out of the box:
 -   **EN ↔ PT**: English and Portuguese
 -   **EN ↔ IT**: English and Italian
 
+### ⚙ Quality Modes
+
+LiveTranslate supports three quality presets that control translation responsiveness vs. accuracy:
+
+| Mode       | When to use                        | Interim debounce | Accuracy bias |
+|------------|------------------------------------|------------------|---------------|
+| `fast`     | Live conversation, gaming          | 200ms            | Low           |
+| `balanced` | General use (default)              | 500ms            | Medium        |
+| `accurate` | Lectures, slow speech, high stakes | 800ms            | High          |
+
+To change the quality mode: right-click tray icon → **Settings** → **Display** tab → **Quality Mode** dropdown.
+
+> [!NOTE]
+> Quality mode changes take effect on the **next Start Listening** session.
+
 You can switch between these presets instantly via the **Settings** window.
 
 ---

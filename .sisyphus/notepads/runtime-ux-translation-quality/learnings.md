@@ -56,3 +56,8 @@
 - Hardened `TrayManager.set_listening` in `src/tray.py` with `try/except Exception` around icon/title UI updates, keeping `self._is_listening = active` before the guarded block.
 - Added lazy logging in except block via `from logger import get_logger` and warning message `[TrayManager] Icon update failed: {exc}` so pystray UI failures do not crash runtime state transitions.
 - Post-fix verification: targeted regression test passes and full suite `pytest -v` reports 65 passed.
+
+## [2026-03-22] Task 7
+- Created `docs/performance-playbook.md` with the manual benchmark protocol and balanced-mode baseline targets for release checks.
+- Added a `### ⚙ Quality Modes` subsection in `README.md` under Settings, documenting `fast`, `balanced`, and `accurate` mode trade-offs and where to change them.
+- Preserved docs-only scope (no `.py` or test file edits); verified with full `pytest -v` and `python -m compileall src main.py`.
