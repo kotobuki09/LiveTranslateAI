@@ -5,7 +5,7 @@ os.environ.pop("GOOGLE_API_KEY", None)
 from dotenv import load_dotenv  # type: ignore[import-not-found]
 
 load_dotenv()
-VERSION = "1.5.1"
+VERSION = "1.5.2"
 
 # ── Audio ───────────────────────────────────────────────────────────────
 SAMPLE_RATE = 16000
@@ -200,10 +200,10 @@ AUTO_CLEAR_SEC = int(_user_conf.get("AUTO_CLEAR_SEC", 4))
 MIN_DISPLAY_SEC = 2
 WINDOW_WIDTH_RATIO = 0.75
 MAX_HISTORY = int(_user_conf.get("MAX_HISTORY", 1))
-INTERIM_DIM_OPACITY = float(_user_conf.get("INTERIM_DIM_OPACITY", 0.6))
+INTERIM_DIM_OPACITY = float(_user_conf.get("INTERIM_DIM_OPACITY", 0.8))
 SHOW_SEPARATOR = bool(_user_conf.get("SHOW_SEPARATOR", True))
 TRANSLATION_ON_TOP = bool(_user_conf.get("TRANSLATION_ON_TOP", False))
-HISTORY_DIM_OPACITY = float(_user_conf.get("HISTORY_DIM_OPACITY", 0.45))
+HISTORY_DIM_OPACITY = float(_user_conf.get("HISTORY_DIM_OPACITY", 0.30))
 TYPEWRITER_WORD_SNAP = bool(_user_conf.get("TYPEWRITER_WORD_SNAP", True))
 SHOW_PROCESSING_INDICATOR = bool(_user_conf.get("SHOW_PROCESSING_INDICATOR", True))
 
