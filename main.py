@@ -225,7 +225,7 @@ class App:
         self._engine.start()
         threading.Thread(target=self._audio.start, daemon=True).start()
 
-        deadline = time.monotonic() + 0.8
+        deadline = time.monotonic() + 3.0
         while time.monotonic() < deadline:
             if self._audio.is_running:
                 break

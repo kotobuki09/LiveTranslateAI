@@ -228,6 +228,8 @@ class TrayManager:
                 self._icon.title = (
                     "LiveTranslate — Listening…" if active else "LiveTranslate — Idle"
                 )
+                if hasattr(self._icon, "update_menu"):
+                    self._icon.update_menu()
             except Exception as exc:
                 from logger import get_logger
 

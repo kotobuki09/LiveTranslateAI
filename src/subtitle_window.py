@@ -190,7 +190,7 @@ class SubtitleWindow(QWidget):
     def _init_animations(self):
         # Premium fade-in/out animation (0 ↔ WINDOW_OPACITY)
         self._fade_anim = QPropertyAnimation(self, b"windowOpacity")
-        self._fade_anim.setDuration(400)  # Slower, smoother transitions
+        self._fade_anim.setDuration(600)  # Slower, smoother transitions
         self._fade_anim.setEasingCurve(QEasingCurve.OutCubic)
 
         # Smooth character-by-character typewriter
@@ -387,9 +387,9 @@ class SubtitleWindow(QWidget):
     def _render_labels_with_history(self):
         import html as _html
 
-        def build_html(text: str, full_color: str) -> str:
+        def build_html(text: str, full_color: str, base_size: int) -> str:
             if "\n" not in text:
-                return _html.escape(text)
+                return f'<span style="font-size:{base_size}pt">{_html.escape(text)}</span>'
             lines = text.split("\n")
             dim_alpha = int(config.HISTORY_DIM_OPACITY * 255)
             if full_color.startswith("rgba"):
@@ -403,17 +403,18 @@ class SubtitleWindow(QWidget):
             history_lines = lines[:-1]
             current_line = lines[-1]
             parts_html = []
+            hist_size = int(base_size * 0.7)
             for h in history_lines:
                 escaped = _html.escape(h)
-                parts_html.append(f'<span style="color:{dim_color}">{escaped}</span>')
-            parts_html.append(_html.escape(current_line))
+                parts_html.append(f'<span style="color:{dim_color}; font-size:{hist_size}pt">{escaped}</span>')
+            parts_html.append(f'<span style="color:{full_color}; font-size:{base_size}pt">{_html.escape(current_line)}</span>')
             return "<br>".join(parts_html)
 
         orig_color = "rgba(240,240,255,230)"
         trans_color = "#FFD700"
 
-        orig_html = build_html(self._curr_orig_text, orig_color)
-        trans_html = build_html(self._curr_trans_text, trans_color)
+        orig_html = build_html(self._curr_orig_text, orig_color, config.FONT_SIZE_ORIGINAL)
+        trans_html = build_html(self._curr_trans_text, trans_color, config.FONT_SIZE_TRANS)
 
         self.label_original.setText(orig_html)
         self.label_translation.setText(trans_html)
@@ -640,7 +641,7 @@ class SubtitleWindow(QWidget):
         self._is_error = False
         self._fade_out()
         # The actual labels are cleared after fade or simply hidden by opacity
-        QTimer.singleShot(400, lambda: self._clear_labels())
+        QTimer.singleShot(600, lambda: self._clear_labels())
 
     def _clear_labels(self):
         self._target_orig = ""
