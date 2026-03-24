@@ -11,13 +11,10 @@
     "MAX_HISTORY": 1,
     "DEBUG_MODE": false,
     "LANG_PAIR": "en-vi",
-    "SUBTITLE_WIDTH": 1760,
-    "SUBTITLE_HEIGHT": 465,
-    "SUBTITLE_X": 1086,
-    "SUBTITLE_Y": 1278,
+    "SUBTITLE_WIDTH": 2161,
+    "SUBTITLE_HEIGHT": 473,
+    "SUBTITLE_X": 615,
+    "SUBTITLE_Y": 1489,
     "AUDIO_SOURCE": "mic",
-    "QUALITY_MODE": "accurate",
-    "TRANSLATION_ON_TOP": false,
-    "SHOW_SEPARATOR": true,
-    "SHOW_PROCESSING_INDICATOR": true
+    "QUALITY_MODE": "accurate"
 }
